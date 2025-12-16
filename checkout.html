@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" />
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script src="https://js.stripe.com/v3"></script>
   <script id="tailwind-config">
     tailwind.config = {
       darkMode: "class",
@@ -57,6 +58,10 @@
   </header>
 
   <main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div id="checkout-banner" class="hidden mb-6 rounded-lg border px-4 py-3 flex items-center gap-3 text-sm font-semibold">
+      <span class="material-symbols-outlined text-lg" id="checkout-banner-icon">info</span>
+      <span id="checkout-banner-text">Status</span>
+    </div>
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
       <div class="lg:col-span-8 space-y-8">
         <div>
@@ -172,22 +177,14 @@
           </div>
         </div>
 
-        <div class="rounded-xl border border-gray-200 dark:border-[#2d3748] bg-white dark:bg-[#1a202c] opacity-60 pointer-events-none">
+        <div class="rounded-xl border border-gray-200 dark:border-[#2d3748] bg-white dark:bg-[#1a202c]">
           <div class="p-6 border-b border-[#f0f2f4] dark:border-[#2d3748]">
             <h2 class="text-lg font-bold text-[#111318] dark:text-white">Payment Method</h2>
             <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Encrypted and secure.</p>
           </div>
           <div class="p-6">
-            <div class="flex gap-4">
-              <div class="flex-1 p-4 border rounded-lg border-primary bg-primary/5 flex items-center justify-center flex-col gap-2">
-                <span class="material-symbols-outlined text-primary">credit_card</span>
-                <span class="text-sm font-bold text-primary">Credit Card</span>
-              </div>
-              <div class="flex-1 p-4 border rounded-lg border-gray-200 dark:border-gray-600 flex items-center justify-center flex-col gap-2">
-                <span class="material-symbols-outlined text-gray-500">account_balance_wallet</span>
-                <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Crypto</span>
-              </div>
-            </div>
+            <div id="card-element" class="bg-[#f5f7fb] dark:bg-[#101622] border border-gray-200 dark:border-gray-700 rounded-lg p-4"></div>
+            <p id="card-errors" class="text-sm text-red-500 mt-2"></p>
           </div>
         </div>
 
@@ -262,7 +259,7 @@
   <script type="module">
     import { secp256k1 } from "https://esm.sh/ethereum-cryptography/secp256k1";
     import { keccak256 } from "https://esm.sh/ethereum-cryptography/keccak.js";
-    import { utf8ToBytes, hexToBytes } from "https://esm.sh/ethereum-cryptography/utils.js";
+    import { utf8ToBytes, hexToBytes, bytesToHex } from "https://esm.sh/ethereum-cryptography/utils.js";
 
     const HOST = "https://base.thefledge.com";
     const ENDPOINTS = { addie: `${HOST}/3005` };
@@ -328,15 +325,29 @@
       return user;
     };
 
-    const addieIntent = async (state, amountCents, currency = "USD") => {
+    const addieCheckoutSession = async (state, payload) => {
       if (!state.addieUuid) await addieCreateUser(state);
       const ts = Date.now().toString();
-      const message = ts + state.addieUuid + amountCents + currency;
+      const totalCents = Math.round((payload.totals?.total || 0) * 100);
+      const message = ts + (state.addieUuid || "") + totalCents;
       const signature = await sessionless.sign(message, state.keys.privateKey);
-      return await fetchJSON(`${ENDPOINTS.addie}/user/${state.addieUuid}/processor/stripe/intent`, {
+      return await fetchJSON(`${ENDPOINTS.addie}/user/${state.addieUuid || state.uuid}/processor/stripe/checkout-session`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ timestamp: ts, amount: amountCents, currency, payees: [], signature })
+        body: JSON.stringify({ ...payload, timestamp: ts, signature })
+      });
+    };
+
+    const addieIntentFallback = async (state, payload) => {
+      if (!state.addieUuid) await addieCreateUser(state);
+      const ts = Date.now().toString();
+      const totalCents = Math.round((payload.totals?.total || 0) * 100);
+      const message = ts + (state.addieUuid || "") + totalCents + "USD";
+      const signature = await sessionless.sign(message, state.keys.privateKey);
+      return await fetchJSON(`${ENDPOINTS.addie}/user/${state.addieUuid || state.uuid}/processor/stripe/intent`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ timestamp: ts, amount: totalCents, currency: "USD", payees: [], signature })
       });
     };
 
@@ -380,7 +391,7 @@
       if (shipEl) shipEl.textContent = `$${shipping.toFixed(2)}`;
       if (taxEl) taxEl.textContent = `$${tax.toFixed(2)}`;
       if (totalEl) totalEl.textContent = `$${(subtotal + shipping + tax).toFixed(2)}`;
-      return { subtotal, shipping, tax };
+      return { subtotal, shipping, tax, total: subtotal + shipping + tax, cart };
     };
 
     const ensureKeys = () => {
@@ -395,24 +406,127 @@
       return next;
     };
 
+    const showQueryToasts = () => {
+      const params = new URLSearchParams(window.location.search);
+      const banner = document.getElementById("checkout-banner");
+      const textEl = document.getElementById("checkout-banner-text");
+      const iconEl = document.getElementById("checkout-banner-icon");
+      const success = params.get("success");
+      const cancel = params.get("cancel");
+      if (!banner || !textEl || !iconEl) return;
+      if (success) {
+        banner.classList.remove("hidden");
+        banner.classList.remove("border-red-200","bg-red-50","text-red-700","dark:border-red-800","dark:bg-red-900/30","dark:text-red-200");
+        banner.classList.add("border-green-200","bg-green-50","text-green-700","dark:border-green-800","dark:bg-green-900/30","dark:text-green-200");
+        iconEl.textContent = "check_circle";
+        textEl.textContent = "Payment completed via Stripe Checkout.";
+        toast("Payment completed via Stripe Checkout", "success");
+      } else if (cancel) {
+        banner.classList.remove("hidden");
+        banner.classList.remove("border-green-200","bg-green-50","text-green-700","dark:border-green-800","dark:bg-green-900/30","dark:text-green-200");
+        banner.classList.add("border-red-200","bg-red-50","text-red-700","dark:border-red-800","dark:bg-red-900/30","dark:text-red-200");
+        iconEl.textContent = "error";
+        textEl.textContent = "Checkout canceled. You can try again or update your cart.";
+        toast("Checkout canceled", "info");
+      } else {
+        banner.classList.add("hidden");
+      }
+    };
+
+    let stripeInstance = null;
+    let cardElement = null;
+    let cardMounted = false;
+
+    const mountCard = (stripe) => {
+      if (cardMounted) return;
+      const elements = stripe.elements();
+      cardElement = elements.create("card");
+      cardElement.mount("#card-element");
+      cardElement.on("change", (event) => {
+        const errEl = document.getElementById("card-errors");
+        if (!errEl) return;
+        errEl.textContent = event.error ? event.error.message : "";
+      });
+      cardMounted = true;
+    };
+
     document.getElementById("btn-checkout-pay")?.addEventListener("click", async () => {
       try {
         const stored = ensureKeys();
         const state = { ...stored, cart: loadState().cart || [] };
         const totals = renderCart();
-        const amountCents = Math.round((totals.subtotal + totals.shipping + totals.tax) * 100);
-        if (!amountCents) throw new Error("Cart is empty");
-        const res = await addieIntent(state, amountCents, "USD");
-        if (res.checkoutUrl) {
-          toast("Redirecting to Stripe test checkout...", "success");
-          window.location.href = res.checkoutUrl;
-        } else if (res.paymentIntent) {
-          toast(`Intent created: ${res.paymentIntent}`, "success");
-          console.log("Addie intent response", res);
-        } else {
-          toast("Intent created", "success");
-          console.log("Addie intent response", res);
+        if (!totals.cart.length) throw new Error("Cart is empty");
+
+        const payload = {
+          cart: totals.cart.map((item) => ({
+            productId: item.productId || item.id,
+            title: item.title,
+            description: item.description,
+            price: parseFloat(item.price || 0),
+            quantity: item.quantity || 1,
+            photoUrl: item.photoUrl || ""
+          })),
+          totals,
+          successUrl: `${window.location.origin}/checkout.html?success=1`,
+          cancelUrl: `${window.location.origin}/checkout.html?cancel=1`
+        };
+
+        // Try checkout-session endpoint; if missing, fallback to payment-intent.
+        let res;
+        try {
+          res = await addieCheckoutSession(state, payload);
+        } catch (err) {
+          if (err.message?.startsWith("404")) {
+            console.warn("Checkout session endpoint missing; falling back to PaymentIntent flow.");
+            res = await addieIntentFallback(state, payload);
+          } else {
+            throw err;
+          }
         }
+        const sessionId = res.sessionId || res.id;
+        const url = res.url || res.checkoutUrl;
+        const publishableKey = res.publishableKey || res.pk || res.publicKey;
+
+        if (url) {
+          toast("Redirecting to Stripe Checkout...", "success");
+          window.location.href = url;
+          return;
+        }
+
+        if (publishableKey && sessionId) {
+          const stripe = Stripe(publishableKey);
+          const { error } = await stripe.redirectToCheckout({ sessionId });
+          if (error) throw error;
+          return;
+        }
+
+        // PaymentIntent path
+        if (res.paymentIntent && publishableKey) {
+          stripeInstance = stripeInstance || Stripe(publishableKey);
+          mountCard(stripeInstance);
+          const clientSecret = res.paymentIntent.includes("_secret") ? res.paymentIntent : res.paymentIntent.clientSecret || res.clientSecret || res.paymentIntent;
+          const billingName = `${document.getElementById("firstName")?.value || ""} ${document.getElementById("lastName")?.value || ""}`.trim();
+          const { error, paymentIntent } = await stripeInstance.confirmCardPayment(clientSecret, {
+            payment_method: {
+              card: cardElement,
+              billing_details: { name: billingName || undefined }
+            }
+          });
+          if (error) {
+            const errEl = document.getElementById("card-errors");
+            if (errEl) errEl.textContent = error.message || "Card error";
+            throw error;
+          }
+          if (paymentIntent?.status === "succeeded") {
+            toast("Payment succeeded!", "success");
+            window.location.href = `${window.location.origin}/checkout.html?success=1`;
+          } else {
+            toast(`Payment state: ${paymentIntent?.status || "unknown"}`, "info");
+          }
+          return;
+        }
+
+        throw new Error("Missing Stripe Checkout session details");
       } catch (err) {
         toast(err.message || "Checkout failed", "error");
         console.error(err);
@@ -430,6 +544,7 @@
     });
 
     renderCart();
+    showQueryToasts();
   </script>
   <script src="nav.js"></script>
 </body>

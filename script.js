@@ -858,15 +858,17 @@ const handleExportIdentity = () => {
       sanoraUuid: state.sanoraUuid,
       keys: state.keys
     };
-    const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "fledge-identity.json";
-    a.click();
-    URL.revokeObjectURL(url);
-    log("Identity exported");
+  const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "fledge-identity.json";
+  a.click();
+  URL.revokeObjectURL(url);
+  log("Identity exported");
+    showToast("Key bundle downloaded", "success");
   } catch (err) {
+    showToast(err.message || "Export failed", "error");
     log(`Export failed: ${err.message}`);
   }
 };

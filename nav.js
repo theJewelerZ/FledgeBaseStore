@@ -3,7 +3,8 @@
   const pages = [
     { name: "Landing", href: "index.html" },
     { name: "Login", href: "login.html" },
-    { name: "Console", href: "console.html" },
+    { name: "Product Manager", href: "product-manager.html" },
+    { name: "Mini Dashboard", href: "mini-dashboard.html" },
     { name: "Storefront", href: "store.html" },
     { name: "Checkout", href: "checkout.html" },
     { name: "Admin Dashboard", href: "admin-dashboard.html" },

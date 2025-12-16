@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Fledge Base - Product Manager</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" />
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#7f13ec",
+            "accent-orange": "#f97316",
+            "background-light": "#f7f6f8",
+            "background-dark": "#141118",
+            "surface-dark": "#1e1a24",
+            "border-dark": "#302839"
+          },
+          fontFamily: { display: ["Inter", "sans-serif"] },
+          backgroundImage: {
+            "purple-orange": "linear-gradient(to right, #7f13ec, #f97316)",
+            "purple-orange-subtle": "linear-gradient(135deg, rgba(127,19,236,0.1), rgba(249,115,22,0.1))"
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-white overflow-hidden h-screen flex">
+  <div id="toast-container" role="status" aria-live="polite" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+  <!-- Sidebar -->
+  <aside class="w-72 bg-[#141118] border-r border-border-dark flex flex-col justify-between shrink-0 h-full overflow-y-auto">
+    <div class="flex flex-col gap-6 p-6">
+      <div class="flex items-center gap-4">
+        <div class="bg-center bg-no-repeat bg-cover rounded-full size-12 shadow-lg shadow-primary/20" data-alt="Abstract purple and orange gradient logo" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBPXLppu66U1gfZBzS6j9Aku989uNu76HJkMFV35K4neO66ddI3bu1fHVlRNidg-HbQ6XBpOHOAPDnUR-7UgpVJWghjACq55z_i-DIt41iu3U3cC-z66zFTw2Knf7NhC4SaaHrNAdGbAnDbzT9weX0Zde4am3dxl2JCVcbHbhHPMv8uS8Emv9udKYQbEM9Katk6E1pCVkiJg0MKh3shKyEUYhTOU1Tac4VY4DihzeFJer29D8IiksLh3aIrWoL5Nf2EeAOqQUTvRH4");'></div>
+        <div class="flex flex-col">
+          <h1 class="text-white text-lg font-bold leading-tight">The Fledge Base</h1>
+          <div class="flex items-center gap-1">
+            <span class="material-symbols-outlined text-green-500 text-[14px]">lock</span>
+            <p class="text-[#ab9db9] text-xs font-mono">Sessionless</p>
+          </div>
+        </div>
+      </div>
+      <nav class="flex flex-col gap-2">
+        <a class="flex items-center gap-3 px-3 py-3 rounded-lg bg-primary/10 border border-primary/20 text-white" href="#">
+          <span class="material-symbols-outlined text-primary">inventory_2</span>
+          <p class="text-white text-sm font-medium">Products</p>
+        </a>
+        <a class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-surface-dark transition-colors group" href="mini-dashboard.html">
+          <span class="material-symbols-outlined text-[#ab9db9] group-hover:text-white">dashboard</span>
+          <p class="text-[#ab9db9] group-hover:text-white text-sm font-medium">Mini Dashboard</p>
+        </a>
+        <a class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-surface-dark transition-colors group" href="store.html">
+          <span class="material-symbols-outlined text-[#ab9db9] group-hover:text-white">storefront</span>
+          <p class="text-[#ab9db9] group-hover:text-white text-sm font-medium">View Store</p>
+        </a>
+        <a class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-surface-dark transition-colors group" href="checkout.html">
+          <span class="material-symbols-outlined text-[#ab9db9] group-hover:text-white">shopping_cart</span>
+          <p class="text-[#ab9db9] group-hover:text-white text-sm font-medium">Checkout</p>
+        </a>
+        <a class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-surface-dark transition-colors group" href="admin-dashboard.html">
+          <span class="material-symbols-outlined text-[#ab9db9] group-hover:text-white">analytics</span>
+          <p class="text-[#ab9db9] group-hover:text-white text-sm font-medium">Global Admin</p>
+        </a>
+      </nav>
+    </div>
+    <div class="p-6 border-t border-border-dark">
+      <button class="flex w-full items-center justify-center gap-2 rounded-lg h-10 px-4 border border-border-dark bg-surface-dark hover:bg-border-dark transition-colors text-white text-sm font-medium">
+        <span class="material-symbols-outlined text-[18px]">logout</span>
+        Disconnect
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+    <div class="h-1 w-full bg-purple-orange"></div>
+    <header class="flex flex-wrap items-center justify-between px-6 lg:px-8 py-4 border-b border-border-dark bg-background-dark/70 backdrop-blur sticky top-0 z-10">
+      <div class="flex flex-col gap-1">
+        <div class="flex items-center gap-3">
+          <h2 class="text-2xl font-bold tracking-tight text-white">Product Manager</h2>
+          <span class="px-2 py-0.5 rounded-full bg-accent-orange/10 text-accent-orange text-xs font-medium border border-accent-orange/20">Live</span>
+        </div>
+        <p class="text-[#ab9db9] text-sm">Manage inventory for your white-label store</p>
+        <div class="flex gap-2 mt-2 flex-wrap text-xs text-[#ab9db9]">
+          <span>Store ID: <span id="pm-store-id" class="font-mono text-white">-</span></span>
+          <span class="hidden sm:inline">|</span>
+          <span>UUID: <span id="pm-uuid" class="font-mono text-white">-</span></span>
+          <span class="hidden sm:inline">|</span>
+          <span>Sanora: <span id="pm-sanora" class="font-mono text-white">-</span></span>
+        </div>
+      </div>
+      <div class="flex items-center gap-3 flex-wrap">
+        <button id="pm-login-key" class="px-3 py-2 rounded-lg bg-white/10 border border-white/10 text-white text-sm hover:bg-white/20 flex items-center gap-2">
+          <span class="material-symbols-outlined text-[18px]">vpn_key</span>
+          Login with Key
+        </button>
+        <button id="pm-copy-link" class="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-[#ab9db9] text-sm hover:text-white flex items-center gap-2">
+          <span class="material-symbols-outlined text-[18px]">link</span>
+          Copy Store Link
+        </button>
+        <button id="pm-refresh" class="px-4 py-2 rounded-lg bg-gradient-to-r from-primary to-accent-orange text-white text-sm font-bold shadow-lg shadow-primary/25 hover:brightness-110 flex items-center gap-2">
+          <span class="material-symbols-outlined text-[18px]">refresh</span>
+          Refresh
+        </button>
+      </div>
+    </header>
+
+    <div class="flex-1 overflow-y-auto p-6 lg:p-8">
+      <div class="max-w-[1400px] mx-auto flex flex-col gap-6">
+        <!-- Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="bg-surface-dark rounded-xl p-5 border border-border-dark relative overflow-hidden group">
+            <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+              <span class="material-symbols-outlined text-6xl text-white">inventory</span>
+            </div>
+            <p class="text-gray-400 text-sm font-medium">Store Products</p>
+            <div class="flex items-end gap-3 mt-2">
+              <h3 id="pm-stat-products" class="text-3xl font-bold text-white">--</h3>
+              <span class="flex items-center text-green-400 text-xs font-medium mb-1 bg-green-400/10 px-1.5 py-0.5 rounded">
+                <span class="material-symbols-outlined text-[14px]">check_circle</span>
+                live
+              </span>
+            </div>
+          </div>
+          <div class="bg-surface-dark rounded-xl p-5 border border-border-dark relative overflow-hidden group">
+            <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+              <span class="material-symbols-outlined text-6xl text-white">public</span>
+            </div>
+            <p class="text-gray-400 text-sm font-medium">Global Products</p>
+            <div class="flex items-end gap-3 mt-2">
+              <h3 id="pm-stat-global" class="text-3xl font-bold text-white">--</h3>
+              <span class="flex items-center text-primary text-xs font-medium mb-1 bg-primary/10 px-1.5 py-0.5 rounded">
+                <span class="material-symbols-outlined text-[14px]">public</span>
+                visible
+              </span>
+            </div>
+          </div>
+          <div class="bg-surface-dark rounded-xl p-5 border border-border-dark relative overflow-hidden group">
+            <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+              <span class="material-symbols-outlined text-6xl text-white">payments</span>
+            </div>
+            <p class="text-gray-400 text-sm font-medium">Catalog Value (USD)</p>
+            <div class="flex items-end gap-3 mt-2">
+              <h3 id="pm-stat-value" class="text-3xl font-bold text-white">--</h3>
+              <span class="flex items-center text-gray-300 text-xs font-medium mb-1 bg-white/10 px-1.5 py-0.5 rounded">
+                <span class="material-symbols-outlined text-[14px]">trending_up</span>
+                sum of prices
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+          <!-- Products table -->
+          <div class="xl:col-span-2 bg-surface-dark rounded-xl p-6 border border-border-dark">
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+              <div>
+                <h3 class="text-white text-lg font-bold">My Products</h3>
+                <p class="text-gray-400 text-sm">Live from Sanora for this store</p>
+              </div>
+              <button id="pm-refresh-products" class="text-sm text-primary hover:text-accent-orange font-medium">Refresh</button>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="text-xs text-gray-400 border-b border-border-dark">
+                    <th class="px-6 py-3">Title</th>
+                    <th class="px-6 py-3">Visibility</th>
+                    <th class="px-6 py-3 text-right">Price</th>
+                  </tr>
+                </thead>
+                <tbody id="pm-products-body" class="text-sm divide-y divide-border-dark">
+                  <tr><td class="px-6 py-4 text-slate-500" colspan="3">Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Quick add -->
+          <div class="flex flex-col gap-6">
+            <div class="bg-gradient-to-br from-[#1a1a1a] to-[#251e2e] rounded-xl p-6 border border-border-dark shadow-lg">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="p-2 bg-purple-orange rounded-lg text-white">
+                  <span class="material-symbols-outlined">add_box</span>
+                </div>
+                <div>
+                  <h3 class="text-white font-bold">Quick Add Product</h3>
+                  <p class="text-gray-400 text-xs">Instantly list a new item</p>
+                </div>
+              </div>
+              <div class="space-y-3">
+                <input id="pm-add-title" class="w-full bg-background-dark border border-border-dark rounded-lg px-3 py-2 text-sm text-white focus:ring-primary focus:border-primary placeholder-gray-600" placeholder="Product Name" type="text" />
+                <textarea id="pm-add-desc" class="w-full bg-background-dark border border-border-dark rounded-lg px-3 py-2 text-sm text-white focus:ring-primary focus:border-primary placeholder-gray-600" rows="2" placeholder="Description"></textarea>
+                <input id="pm-add-price" class="w-full bg-background-dark border border-border-dark rounded-lg px-3 py-2 text-sm text-white focus:ring-primary focus:border-primary placeholder-gray-600" placeholder="Price (USD)" type="text" />
+                <input id="pm-add-photo" class="w-full bg-background-dark border border-border-dark rounded-lg px-3 py-2 text-sm text-white focus:ring-primary focus:border-primary placeholder-gray-600" placeholder="Photo URL" type="text" />
+                <select id="pm-add-vis" class="w-full bg-background-dark border border-border-dark rounded-lg px-3 py-2 text-sm text-white focus:ring-primary focus:border-primary">
+                  <option value="global">Global</option>
+                  <option value="store">Store</option>
+                  <option value="private">Private</option>
+                </select>
+                <button id="pm-add-save" class="w-full bg-white text-black hover:bg-gray-200 font-bold py-2.5 rounded-lg text-sm transition-colors mt-2">
+                  Publish Item
+                </button>
+              </div>
+            </div>
+
+            <div class="bg-surface-dark rounded-xl p-6 border border-border-dark">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-white font-bold">Store Identity</h3>
+              </div>
+              <div class="space-y-2 text-sm text-slate-300">
+                <div class="flex justify-between">
+                  <span class="text-slate-400">UUID</span>
+                  <span id="pm-uuid2" class="font-mono">-</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-400">Sanora UUID</span>
+                  <span id="pm-sanora2" class="font-mono">-</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-400">Store Link</span>
+                  <span id="pm-store-link" class="font-mono truncate">-</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="product-manager.js"></script>
+  <script src="nav.js"></script>
+</body>
+</html>

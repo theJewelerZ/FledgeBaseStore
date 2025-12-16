@@ -1,276 +1,400 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fledge Userflow Console</title>
-  <link rel="stylesheet" href="styles.css" />
+  <title>The Fledge Base - Product Manager</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" />
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#7f13ec",
+            "accent-orange": "#f97316",
+            "background-light": "#f7f6f8",
+            "background-dark": "#141118",
+            "surface-dark": "#1e1a24",
+            "border-dark": "#302839"
+          },
+          fontFamily: { display: ["Inter", "sans-serif"] },
+          backgroundImage: {
+            "purple-orange": "linear-gradient(to right, #7f13ec, #f97316)",
+            "purple-orange-subtle": "linear-gradient(135deg, rgba(127,19,236,0.1), rgba(249,115,22,0.1))"
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+    }
+    .product-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+    .product-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: #0f172a;
+    }
+    .product-card .title {
+      font-weight: 600;
+    }
+    .product-card .muted {
+      font-size: 13px;
+      color: #9ca3af;
+    }
+    .product-card .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+  </style>
 </head>
-<body>
-  <div id="toast-container" role="status" aria-live="polite" style="position:fixed;top:16px;right:16px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none;"></div>
-  <div class="container">
-    <header class="top">
-      <div class="brand">
-        <p class="eyebrow">Fledge</p>
-        <h1>Userflow Console</h1>
-        <p class="muted">Guided onboarding from sessionless auth to mini-store.</p>
-      </div>
-      <div class="status-stack">
-        <div class="form-row slim">
-          <label for="env-select">Environment</label>
-          <select id="env-select">
-            <option value="prod">Prod Aú base.thefledge.com</option>
-            <option value="stage">Stage Aú localhost:3000+</option>
-            <option value="local">Local Aú http://localhost</option>
-          </select>
+<body class="bg-background-light dark:bg-background-dark font-display text-white overflow-hidden h-screen flex">
+  <div id="toast-container" role="status" aria-live="polite" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- Sidebar -->
+  <aside class="w-72 bg-[#141118] border-r border-border-dark flex flex-col justify-between shrink-0 h-full overflow-y-auto">
+    <div class="flex flex-col gap-6 p-6">
+      <div class="flex items-center gap-4">
+        <div class="bg-center bg-no-repeat bg-cover rounded-full size-12 shadow-lg shadow-primary/20" data-alt="Abstract purple and orange gradient logo" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBPXLppu66U1gfZBzS6j9Aku989uNu76HJkMFV35K4neO66ddI3bu1fHVlRNidg-HbQ6XBpOHOAPDnUR-7UgpVJWghjACq55z_i-DIt41iu3U3cC-z66zFTw2Knf7NhC4SaaHrNAdGbAnDbzT9weX0Zde4am3dxl2JCVcbHbhHPMv8uS8Emv9udKYQbEM9Katk6E1pCVkiJg0MKh3shKyEUYhTOU1Tac4VY4DihzeFJer29D8IiksLh3aIrWoL5Nf2EeAOqQUTvRH4");'></div>
+        <div class="flex flex-col">
+          <h1 class="text-white text-lg font-bold leading-tight">The Fledge Base</h1>
+          <div class="flex items-center gap-1">
+            <span class="material-symbols-outlined text-green-500 text-[14px]">lock</span>
+            <p class="text-[#ab9db9] text-xs font-mono">Sessionless</p>
+          </div>
         </div>
-        <div class="pills compact">
-          <button class="pill soft copy-btn" data-copy="session-uuid" aria-label="Copy UUID">UUID: <strong id="session-uuid">-</strong></button>
-          <button class="pill soft copy-btn" data-copy="session-emoji" aria-label="Copy emoji code">Emoji: <strong id="session-emoji">-</strong></button>
-          <button class="pill soft copy-btn" data-copy="session-hash" aria-label="Copy hash">Hash: <strong id="session-hash">-</strong></button>
+      </div>
+      <nav class="flex flex-col gap-2">
+        <a class="flex items-center gap-3 px-3 py-3 rounded-lg bg-primary/10 border border-primary/20 text-white" href="#">
+          <span class="material-symbols-outlined text-primary">inventory_2</span>
+          <p class="text-white text-sm font-medium">Products</p>
+        </a>
+        <a class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-surface-dark transition-colors group" href="store.html">
+          <span class="material-symbols-outlined text-[#ab9db9] group-hover:text-white">storefront</span>
+          <p class="text-[#ab9db9] group-hover:text-white text-sm font-medium">View Store</p>
+        </a>
+        <a class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-surface-dark transition-colors group" href="checkout.html">
+          <span class="material-symbols-outlined text-[#ab9db9] group-hover:text-white">shopping_cart</span>
+          <p class="text-[#ab9db9] group-hover:text-white text-sm font-medium">Checkout</p>
+        </a>
+        <a class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-surface-dark transition-colors group" href="admin-dashboard.html">
+          <span class="material-symbols-outlined text-[#ab9db9] group-hover:text-white">dashboard</span>
+          <p class="text-[#ab9db9] group-hover:text-white text-sm font-medium">Global Admin</p>
+        </a>
+      </nav>
+    </div>
+    <div class="p-6 border-t border-border-dark">
+      <button class="flex w-full items-center justify-center gap-2 rounded-lg h-10 px-4 border border-border-dark bg-surface-dark hover:bg-border-dark transition-colors text-white text-sm font-medium">
+        <span class="material-symbols-outlined text-[18px]">logout</span>
+        Disconnect
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+    <div class="h-1 w-full bg-purple-orange"></div>
+    <header class="flex items-center justify-between px-6 lg:px-8 py-4 border-b border-border-dark bg-background-dark/70 backdrop-blur sticky top-0 z-10">
+      <div class="flex flex-col gap-1">
+        <div class="flex items-center gap-3">
+          <h2 class="text-2xl font-bold tracking-tight text-white">Product Manager</h2>
+          <span class="px-2 py-0.5 rounded-full bg-accent-orange/10 text-accent-orange text-xs font-medium border border-accent-orange/20">Beta</span>
+        </div>
+        <p class="text-[#ab9db9] text-sm">Manage inventory for your white-label store</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <select id="env-select" class="h-10 rounded-lg bg-surface-dark border border-border-dark text-sm text-white px-3">
+          <option value="prod">Prod – base.thefledge.com</option>
+          <option value="stage">Stage – localhost</option>
+          <option value="local">Local – localhost</option>
+        </select>
+        <div class="hidden md:flex gap-2">
+          <button class="pill copy-btn inline-flex items-center gap-1 px-3 py-2 rounded-full border border-white/10 text-xs text-white bg-white/5" data-copy="session-uuid" aria-label="Copy UUID">UUID: <span id="session-uuid" class="font-semibold">-</span></button>
+          <button class="pill copy-btn inline-flex items-center gap-1 px-3 py-2 rounded-full border border-white/10 text-xs text-white bg-white/5" data-copy="session-emoji" aria-label="Copy emoji code">Emoji: <span id="session-emoji" class="font-semibold">-</span></button>
+          <button class="pill copy-btn inline-flex items-center gap-1 px-3 py-2 rounded-full border border-white/10 text-xs text-white bg-white/5" data-copy="session-hash" aria-label="Copy hash">Hash: <span id="session-hash" class="font-semibold">-</span></button>
         </div>
       </div>
     </header>
 
-    <section class="layout">
-      <div class="column">
-        <div class="card" id="quickstart">
-          <div class="card-header">
-            <div>
-              <p class="eyebrow">Quick Start</p>
-              <h2>Sessionless onboarding</h2>
-            </div>
-          </div>
-          <div class="card-body vertical-gap">
-            <div class="wizard">
-              <div class="wizard-step">
+    <div class="flex-1 overflow-y-auto p-6 lg:p-8">
+      <div class="max-w-[1400px] mx-auto flex flex-col gap-8">
+        <!-- Quick start + identity -->
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+          <!-- Left: onboarding -->
+          <div class="xl:col-span-2 space-y-6">
+            <div class="bg-surface-dark rounded-2xl border border-border-dark p-6">
+              <div class="flex items-center justify-between mb-4">
                 <div>
-                  <h3>1. Generate keys</h3>
-                  <p class="muted small">Sessionless secp256k1 + keccak.</p>
-                </div>
-                <div class="actions">
-                  <button id="btn-gen-keys" class="primary">Generate keys</button>
-                </div>
-                <div class="grid two">
-                  <div>
-                    <label for="pubkey-display">Public key</label>
-                    <input id="pubkey-display" type="text" readonly />
-                  </div>
-                  <div>
-                    <label for="privkey-display">Private key</label>
-                    <input id="privkey-display" type="text" readonly />
-                  </div>
+                  <p class="text-xs uppercase tracking-[0.08em] text-[#ab9db9]">Quick Start</p>
+                  <h3 class="text-xl font-bold">Sessionless onboarding</h3>
                 </div>
               </div>
+              <div class="space-y-6">
+                <!-- Step 1 -->
+                <div class="rounded-xl border border-border-dark bg-[#191422] p-4 flex flex-col gap-3">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <h4 class="font-semibold">1. Generate keys</h4>
+                      <p class="text-xs text-[#ab9db9]">Sessionless secp256k1 + keccak.</p>
+                    </div>
+                    <button id="btn-gen-keys" class="px-4 py-2 rounded-lg bg-primary text-white text-sm font-bold shadow-lg shadow-primary/25 hover:bg-primary/90">Generate keys</button>
+                  </div>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <label class="text-xs text-[#ab9db9]">Public key</label>
+                      <input id="pubkey-display" class="mt-1 w-full rounded-lg bg-[#141118] border border-border-dark text-white text-sm px-3 py-2" type="text" readonly />
+                    </div>
+                    <div>
+                      <label class="text-xs text-[#ab9db9]">Private key</label>
+                      <input id="privkey-display" class="mt-1 w-full rounded-lg bg-[#141118] border border-border-dark text-white text-sm px-3 py-2" type="text" readonly />
+                    </div>
+                  </div>
+                </div>
 
-              <div class="wizard-step">
-                <div>
-                  <h3>2. Mint user</h3>
-                  <p class="muted small">Continuebee + BDO + Sanora.</p>
+                <!-- Step 2 -->
+                <div class="rounded-xl border border-border-dark bg-[#191422] p-4 flex flex-col gap-3">
+                  <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <h4 class="font-semibold">2. Mint / Login</h4>
+                      <p class="text-xs text-[#ab9db9]">Continuebee + BDO + Sanora</p>
+                    </div>
+                    <div class="flex gap-2 flex-wrap">
+                      <button id="btn-mint" class="px-4 py-2 rounded-lg bg-primary text-white text-sm font-bold shadow-lg shadow-primary/25 hover:bg-primary/90">Mint account</button>
+                      <button id="btn-login" class="px-3 py-2 rounded-lg bg-white/10 border border-white/10 text-white text-sm hover:bg-white/20">Login with saved</button>
+                      <button id="btn-logout" class="px-3 py-2 rounded-lg bg-white/5 border border-white/5 text-[#ab9db9] text-sm hover:text-white">Logout</button>
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div>
+                      <label class="text-xs text-[#ab9db9]">Hash / state id</label>
+                      <div class="flex gap-2 mt-1">
+                        <input id="hash-input" class="flex-1 rounded-lg bg-[#141118] border border-border-dark text-white text-sm px-3 py-2" type="text" placeholder="hash-abc123" />
+                        <button id="btn-random-hash" class="px-3 py-2 rounded-lg bg-white/5 text-white text-xs border border-white/10 hover:bg-white/10">Random</button>
+                      </div>
+                    </div>
+                    <div>
+                      <label class="text-xs text-[#ab9db9]">UUID</label>
+                      <input id="login-uuid" class="mt-1 w-full rounded-lg bg-[#141118] border border-border-dark text-white text-sm px-3 py-2" type="text" placeholder="uuid" />
+                    </div>
+                    <div>
+                      <label class="text-xs text-[#ab9db9]">Private key</label>
+                      <input id="login-priv" class="mt-1 w-full rounded-lg bg-[#141118] border border-border-dark text-white text-sm px-3 py-2" type="text" placeholder="paste priv" />
+                    </div>
+                  </div>
                 </div>
-                <div class="actions">
-                  <button id="btn-mint" class="secondary">Mint account</button>
-                  <button id="btn-login" class="ghost">Login with saved</button>
-                  <button id="btn-logout" class="ghost">Logout</button>
-                </div>
-                <div class="grid three">
-                  <div>
-                    <label for="hash-input">Hash / state id</label>
-                    <div class="inline">
-                      <input id="hash-input" type="text" placeholder="hash-abc123" />
-                      <button id="btn-random-hash" class="ghost">Random</button>
+
+                <!-- Step 3 Profile -->
+                <div class="rounded-xl border border-border-dark bg-[#191422] p-4 flex flex-col gap-3">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <h4 class="font-semibold">3. Profile</h4>
+                      <p class="text-xs text-[#ab9db9]">Store basic profile into BDO.</p>
+                    </div>
+                    <button id="btn-save-profile" class="px-4 py-2 rounded-lg bg-primary text-white text-sm font-bold shadow-lg shadow-primary/25 hover:bg-primary/90">Save profile</button>
+                  </div>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <label class="text-xs text-[#ab9db9]">Name</label>
+                      <input id="profile-name" class="mt-1 w-full rounded-lg bg-[#141118] border border-border-dark text-white text-sm px-3 py-2" type="text" placeholder="Your name" />
+                    </div>
+                    <div>
+                      <label class="text-xs text-[#ab9db9]">Email</label>
+                      <input id="profile-email" class="mt-1 w-full rounded-lg bg-[#141118] border border-border-dark text-white text-sm px-3 py-2" type="email" placeholder="you@example.com" />
                     </div>
                   </div>
                   <div>
-                    <label for="login-uuid">UUID</label>
-                    <input id="login-uuid" type="text" placeholder="uuid" />
-                  </div>
-                  <div>
-                    <label for="login-priv">Private key</label>
-                    <input id="login-priv" type="text" placeholder="paste priv" />
+                    <label class="text-xs text-[#ab9db9]">Bio</label>
+                    <textarea id="profile-bio" class="mt-1 w-full rounded-lg bg-[#141118] border border-border-dark text-white text-sm px-3 py-2" rows="2" placeholder="Short bio"></textarea>
                   </div>
                 </div>
-              </div>
 
-              <div class="wizard-step">
-                <div>
-                  <h3>3. Profile</h3>
-                  <p class="muted small">Store basic profile into BDO.</p>
-                </div>
-                <div class="actions">
-                  <button id="btn-save-profile" class="primary">Save profile</button>
-                </div>
-                <div class="grid two">
-                  <div>
-                    <label for="profile-name">Name</label>
-                    <input id="profile-name" type="text" placeholder="Your name" />
+                <!-- Step 4 Store -->
+                <div class="rounded-xl border border-border-dark bg-[#191422] p-4 flex flex-col gap-3">
+                  <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <h4 class="font-semibold">4. Mini store</h4>
+                      <p class="text-xs text-[#ab9db9]">Create referral link and visibility.</p>
+                    </div>
+                    <div class="flex gap-2 flex-wrap">
+                      <button id="btn-save-store" class="px-4 py-2 rounded-lg bg-primary text-white text-sm font-bold shadow-lg shadow-primary/25 hover:bg-primary/90">Save store</button>
+                      <button id="btn-visit-store" class="px-3 py-2 rounded-lg bg-white/10 border border-white/10 text-white text-sm hover:bg-white/20" disabled>Visit</button>
+                      <button id="btn-copy-store" class="px-3 py-2 rounded-lg bg-white/5 border border-white/5 text-[#ab9db9] text-sm hover:text-white">Copy link</button>
+                    </div>
                   </div>
-                  <div>
-                    <label for="profile-email">Email</label>
-                    <input id="profile-email" type="email" placeholder="you@example.com" />
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <label class="text-xs text-[#ab9db9]">Store name</label>
+                      <input id="store-name" class="mt-1 w-full rounded-lg bg-[#141118] border border-border-dark text-white text-sm px-3 py-2" type="text" placeholder="My Fledge Store" />
+                    </div>
+                    <div>
+                      <label class="text-xs text-[#ab9db9]">Visibility</label>
+                      <select id="store-public" class="mt-1 w-full rounded-lg bg-[#141118] border border-border-dark text-white text-sm px-3 py-2">
+                        <option value="true">Public (listed)</option>
+                        <option value="false">Unlisted</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="flex flex-wrap gap-2">
+                    <button class="copy-btn inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/5 border border-white/10 text-xs text-white" data-copy="store-link" aria-label="Copy store link">
+                      Referral link: <span id="store-link" class="font-semibold">-</span>
+                    </button>
+                    <span class="inline-flex items-center gap-1 px-3 py-2 rounded-full bg-white/5 border border-white/10 text-xs text-white">Code: <span id="store-code" class="font-semibold">-</span></span>
                   </div>
                 </div>
-                <div>
-                  <label for="profile-bio">Bio</label>
-                  <textarea id="profile-bio" rows="2" placeholder="Short bio"></textarea>
-                </div>
-              </div>
 
-              <div class="wizard-step">
-                <div>
-                  <h3>4. Mini store</h3>
-                  <p class="muted small">Create referral link and visibility.</p>
-                </div>
-                <div class="actions">
-                  <button id="btn-save-store" class="primary">Save store</button>
-                  <button id="btn-visit-store" class="secondary" disabled>Visit</button>
-                  <button id="btn-copy-store" class="ghost">Copy link</button>
-                </div>
-                <div class="grid two">
+                <!-- Step 5 seed -->
+                <div class="rounded-xl border border-border-dark bg-[#191422] p-4 flex items-center justify-between">
                   <div>
-                    <label for="store-name">Store name</label>
-                    <input id="store-name" type="text" placeholder="My Fledge Store" />
+                    <h4 class="font-semibold">5. Seed products</h4>
+                    <p class="text-xs text-[#ab9db9]">Starter catalog into Sanora.</p>
                   </div>
-                  <div>
-                    <label for="store-public">Visibility</label>
-                    <select id="store-public">
-                      <option value="true">Public (listed)</option>
-                      <option value="false">Unlisted</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="pills compact">
-                  <button class="pill soft copy-btn" data-copy="store-link" aria-label="Copy store link">Referral link: <strong id="store-link">-</strong></button>
-                  <span class="pill soft">Code: <strong id="store-code">-</strong></span>
+                  <button id="btn-seed-products" class="px-4 py-2 rounded-lg bg-white/10 border border-white/10 text-white text-sm hover:bg-white/20">Seed starter items</button>
                 </div>
               </div>
+            </div>
+          </div>
 
-              <div class="wizard-step">
+          <!-- Right: identity/tools -->
+          <div class="space-y-6">
+            <div class="bg-surface-dark rounded-2xl border border-border-dark p-6">
+              <div class="flex items-center justify-between">
                 <div>
-                  <h3>5. Seed products</h3>
-                  <p class="muted small">Starter catalog into Sanora.</p>
+                  <p class="text-xs uppercase tracking-[0.08em] text-[#ab9db9]">Identity</p>
+                  <h3 class="text-lg font-bold">Export / import</h3>
+                  <p class="text-xs text-[#ab9db9]">Bundle includes uuid, hash, keys, sanora uuid.</p>
                 </div>
-                <div class="actions">
-                  <button id="btn-seed-products" class="secondary">Seed starter items</button>
+                <div class="flex gap-2">
+                  <button id="btn-export-id" class="px-3 py-2 rounded-lg bg-white/10 border border-white/10 text-white text-sm hover:bg-white/20">Download</button>
+                  <label class="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white text-sm hover:bg-white/10 cursor-pointer">
+                    Upload
+                    <input id="btn-import-id" type="file" accept="application/json" hidden />
+                  </label>
                 </div>
               </div>
+            </div>
+
+            <div class="bg-surface-dark rounded-2xl border border-border-dark p-6">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-xs uppercase tracking-[0.08em] text-[#ab9db9]">Admin</p>
+                  <h3 class="text-lg font-bold">BDO JSON</h3>
+                  <p class="text-xs text-[#ab9db9]">Raw read/write and delete.</p>
+                </div>
+              </div>
+              <div class="mt-3">
+                <label class="text-xs text-[#ab9db9]" for="bdo-editor">BDO JSON</label>
+                <textarea id="bdo-editor" class="mt-1 w-full rounded-lg bg-[#141118] border border-border-dark text-white text-sm px-3 py-2" rows="6" placeholder='{"profile":{},"store":{}}'></textarea>
+              </div>
+              <div class="flex flex-wrap gap-2 mt-3">
+                <button id="btn-fetch-bdo" class="px-3 py-2 rounded-lg bg-white/10 border border-white/10 text-white text-sm hover:bg-white/20">Fetch</button>
+                <button id="btn-update-bdo" class="px-3 py-2 rounded-lg bg-primary text-white text-sm font-bold hover:bg-primary/90 shadow-lg shadow-primary/25">Update</button>
+                <button id="btn-delete-user" class="px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm hover:bg-red-500/20">Delete user</button>
+              </div>
+            </div>
+
+            <div class="bg-surface-dark rounded-2xl border border-border-dark p-6">
+              <div class="flex items-center justify-between mb-2">
+                <div>
+                  <p class="text-xs uppercase tracking-[0.08em] text-[#ab9db9]">Log</p>
+                  <h3 class="text-lg font-bold">Requests</h3>
+                </div>
+              </div>
+              <pre id="log" class="bg-[#0f0b14] border border-border-dark rounded-lg p-3 text-xs text-[#ab9db9] h-48 overflow-auto">Ready...</pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- Products -->
+        <div class="bg-surface-dark rounded-2xl border border-border-dark p-6">
+          <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <div>
+              <p class="text-xs uppercase tracking-[0.08em] text-[#ab9db9]">Products</p>
+              <h3 class="text-xl font-bold">Sanora catalog</h3>
+            </div>
+            <div class="flex gap-2 flex-wrap">
+              <button id="btn-save-product" class="px-4 py-2 rounded-lg bg-primary text-white text-sm font-bold shadow-lg shadow-primary/25 hover:bg-primary/90">Save product</button>
+              <button id="btn-load-my-products" class="px-3 py-2 rounded-lg bg-white/10 border border-white/10 text-white text-sm hover:bg-white/20">Refresh mine</button>
+              <button id="btn-load-global" class="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-[#ab9db9] text-sm hover:text-white">Refresh global</button>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="text-xs text-[#ab9db9]">Title</label>
+              <input id="product-title" class="mt-1 w-full rounded-lg bg-[#141118] border border-border-dark text-white text-sm px-3 py-2" type="text" placeholder="Awesome thing" />
+            </div>
+            <div>
+              <label class="text-xs text-[#ab9db9]">Price (USD)</label>
+              <input id="product-price" class="mt-1 w-full rounded-lg bg-[#141118] border border-border-dark text-white text-sm px-3 py-2" type="text" placeholder="19.99" />
+            </div>
+          </div>
+          <div class="mt-3">
+            <label class="text-xs text-[#ab9db9]">Description</label>
+            <textarea id="product-description" class="mt-1 w-full rounded-lg bg-[#141118] border border-border-dark text-white text-sm px-3 py-2" rows="2" placeholder="Describe it"></textarea>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+            <div>
+              <label class="text-xs text-[#ab9db9]">Photo URL</label>
+              <input id="product-photo" class="mt-1 w-full rounded-lg bg-[#141118] border border-border-dark text-white text-sm px-3 py-2" type="text" placeholder="https://..." />
+            </div>
+            <div>
+              <label class="text-xs text-[#ab9db9]">Visibility</label>
+              <select id="product-public" class="mt-1 w-full rounded-lg bg-[#141118] border border-border-dark text-white text-sm px-3 py-2">
+                <option value="global">Global (store + global)</option>
+                <option value="store">Store only</option>
+                <option value="private">Private (hidden)</option>
+              </select>
+            </div>
+          </div>
+          <p class="text-xs text-[#ab9db9] mt-2">Global products appear in every store; Store-only products stay on your link. Private items remain hidden.</p>
+          <div class="mt-5 grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <p class="text-xs uppercase tracking-[0.08em] text-[#ab9db9]">My products</p>
+              </div>
+              <div id="product-grid" class="product-grid three grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <p class="text-xs uppercase tracking-[0.08em] text-[#ab9db9]">Global products</p>
+              </div>
+              <div id="global-grid" class="product-grid three grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
             </div>
           </div>
         </div>
       </div>
-
-      <div class="column">
-        <div class="card">
-          <div class="card-header">
-            <div>
-              <p class="eyebrow">Identity</p>
-              <h2>Export / import</h2>
-            </div>
-            <div class="actions slim">
-              <button id="btn-export-id" class="ghost">Download identity</button>
-              <label class="btn-file ghost">
-                Upload
-                <input id="btn-import-id" type="file" accept="application/json" hidden />
-              </label>
-            </div>
-          </div>
-          <div class="card-body">
-            <p class="muted small">Bundle includes uuid, hash, keys, sanora uuid.</p>
-          </div>
-        </div>
-
-        <div class="card" id="products-card">
-          <div class="card-header">
-            <div>
-              <p class="eyebrow">Products</p>
-              <h2>Sanora catalog</h2>
-            </div>
-            <div class="actions slim">
-              <button id="btn-save-product" class="primary">Save product</button>
-              <button id="btn-load-my-products" class="ghost">Refresh mine</button>
-              <button id="btn-load-global" class="ghost">Refresh global</button>
-            </div>
-          </div>
-          <div class="card-body vertical-gap">
-            <div class="form-row two">
-              <div>
-                <label for="product-title">Title</label>
-                <input id="product-title" type="text" placeholder="Awesome thing" />
-              </div>
-              <div>
-                <label for="product-price">Price (USD)</label>
-                <input id="product-price" type="text" placeholder="19.99" />
-              </div>
-            </div>
-            <div class="form-row">
-              <label for="product-description">Description</label>
-              <textarea id="product-description" rows="2" placeholder="Describe it"></textarea>
-            </div>
-            <div class="form-row two">
-              <div>
-                <label for="product-photo">Photo URL</label>
-                <input id="product-photo" type="text" placeholder="https://..." />
-              </div>
-              <div>
-                <label for="product-public">Visibility</label>
-                <select id="product-public">
-                  <option value="global">Global (store + global)</option>
-                  <option value="store">Store only</option>
-                  <option value="private">Private (hidden)</option>
-                </select>
-              </div>
-            </div>
-            <p class="hint">Global products appear in every store; Store-only products stay on your link. Private items remain hidden.</p>
-            <div class="list-block">
-              <div class="list-head">
-                <p class="eyebrow tiny">My products</p>
-              </div>
-              <div id="product-grid" class="product-grid three"></div>
-            </div>
-            <div class="list-block">
-              <div class="list-head">
-                <p class="eyebrow tiny">Global products</p>
-              </div>
-              <div id="global-grid" class="product-grid three"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-header">
-            <div>
-              <p class="eyebrow">Admin</p>
-              <h2>Advanced controls</h2>
-              <p class="muted small">Raw BDO JSON (read/write) and Addie stubs.</p>
-            </div>
-          </div>
-          <div class="card-body vertical-gap">
-            <div class="form-row">
-              <label for="bdo-editor">BDO JSON</label>
-              <textarea id="bdo-editor" rows="6" placeholder='{"profile":{},"store":{}}'></textarea>
-            </div>
-            <div class="actions slim">
-              <button id="btn-fetch-bdo" class="ghost">Fetch</button>
-              <button id="btn-update-bdo" class="secondary">Update</button>
-              <button id="btn-delete-user" class="danger">Delete user</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="card console">
-          <div class="card-header">
-            <div>
-              <p class="eyebrow">Log</p>
-              <h2>Requests</h2>
-            </div>
-          </div>
-          <pre id="log">Ready...</pre>
-        </div>
-      </div>
-    </section>
-  </div>
+    </div>
+  </main>
 
   <script type="module" src="script.js"></script>
-<script src="nav.js"></script></body>
+  <script src="nav.js"></script>
+</body>
 </html>
-
