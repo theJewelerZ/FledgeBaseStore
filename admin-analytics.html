@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Fledge Base Global Store Analytics</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" />
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#7f13ec",
+            "primary-light": "#9d4df2",
+            "accent-orange": "#fa6f38",
+            "background-light": "#f7f6f8",
+            "background-dark": "#191022",
+            "card-dark": "#231a2e"
+          },
+          fontFamily: { display: ["Inter", "sans-serif"] },
+          borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", "2xl": "1rem", full: "9999px" }
+        }
+      }
+    };
+  </script>
+  <style>
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #191022; }
+    ::-webkit-scrollbar-thumb { background: #3a2e48; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #7f13ec; }
+  </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display antialiased overflow-hidden">
+  <div class="flex h-screen w-full">
+    <aside class="hidden w-64 flex-col border-r border-white/5 bg-[#141118] lg:flex">
+      <div class="flex h-16 items-center gap-3 px-6 border-b border-white/5">
+        <div class="size-8 rounded-lg bg-gradient-to-br from-primary to-accent-orange flex items-center justify-center">
+          <span class="material-symbols-outlined text-white text-xl">dataset</span>
+        </div>
+        <span class="text-lg font-bold tracking-tight text-white">The Fledge Base</span>
+      </div>
+      <div class="flex flex-1 flex-col justify-between p-4">
+        <nav class="flex flex-col gap-2">
+          <p class="px-2 text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Platform</p>
+          <a class="flex items-center gap-3 rounded-lg bg-primary/20 px-3 py-2.5 text-white transition-colors" href="#">
+            <span class="material-symbols-outlined text-primary-light">analytics</span>
+            <span class="font-medium">Analytics</span>
+          </a>
+          <a class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-white/5 hover:text-white transition-colors" href="#">
+            <span class="material-symbols-outlined">storefront</span>
+            <span class="font-medium">Mini-Stores</span>
+          </a>
+          <a class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-white/5 hover:text-white transition-colors" href="#">
+            <span class="material-symbols-outlined">inventory_2</span>
+            <span class="font-medium">Global Inventory</span>
+          </a>
+          <a class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-white/5 hover:text-white transition-colors" href="#">
+            <span class="material-symbols-outlined">group</span>
+            <span class="font-medium">Users</span>
+          </a>
+          <p class="px-2 text-xs font-semibold uppercase tracking-wider text-slate-500 mt-4 mb-2">System</p>
+          <a class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-white/5 hover:text-white transition-colors" href="#">
+            <span class="material-symbols-outlined">encrypted</span>
+            <span class="font-medium">Security &amp; Keys</span>
+          </a>
+          <a class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-white/5 hover:text-white transition-colors" href="#">
+            <span class="material-symbols-outlined">settings</span>
+            <span class="font-medium">Settings</span>
+          </a>
+        </nav>
+        <div class="rounded-xl bg-gradient-to-br from-card-dark to-[#1f1625] p-4 border border-white/5">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="material-symbols-outlined text-accent-orange text-sm">bolt</span>
+            <span class="text-xs font-semibold text-white">System Status</span>
+          </div>
+          <div class="w-full bg-slate-800 rounded-full h-1.5 mb-2">
+            <div class="bg-accent-orange h-1.5 rounded-full w-[92%]"></div>
+          </div>
+          <div class="flex justify-between text-[10px] text-slate-400">
+            <span>Nodes Online</span>
+            <span class="text-white">92%</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="flex h-full flex-1 flex-col overflow-hidden">
+      <header class="flex h-16 items-center justify-between border-b border-white/5 bg-[#141118]/80 backdrop-blur-md px-8 z-10">
+        <div class="flex items-center gap-4 text-white">
+          <div class="flex items-center gap-2 text-sm text-slate-400">
+            <span>Mission Control</span>
+            <span class="material-symbols-outlined text-xs">chevron_right</span>
+            <span class="text-white font-medium">Analytics Overview</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-6">
+          <div class="relative hidden sm:block">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-lg">search</span>
+            <input class="h-10 w-64 rounded-full border-none bg-card-dark pl-10 pr-4 text-sm text-white placeholder-slate-500 focus:ring-1 focus:ring-primary" placeholder="Search stores, wallets, or tx IDs..." type="text" />
+          </div>
+          <button class="relative text-slate-400 hover:text-white transition-colors">
+            <span class="material-symbols-outlined">notifications</span>
+            <span class="absolute top-0 right-0 size-2 rounded-full bg-accent-orange"></span>
+          </button>
+        </div>
+      </header>
+
+      <div class="flex-1 overflow-y-auto p-4 lg:p-8">
+        <div class="mx-auto max-w-7xl flex flex-col gap-8">
+          <div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <div>
+              <h1 class="text-3xl font-black tracking-tight text-white md:text-4xl mb-2">Global Market Pulse</h1>
+              <p class="text-slate-400">Real-time insights across the decentralized white-label ecosystem.</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-3">
+              <div class="flex items-center rounded-lg bg-card-dark p-1 border border-white/5">
+                <button class="rounded-md bg-primary px-4 py-1.5 text-xs font-semibold text-white shadow-sm">24h</button>
+                <button class="rounded-md px-4 py-1.5 text-xs font-medium text-slate-400 hover:text-white transition-colors">7d</button>
+                <button class="rounded-md px-4 py-1.5 text-xs font-medium text-slate-400 hover:text-white transition-colors">30d</button>
+                <button class="rounded-md px-4 py-1.5 text-xs font-medium text-slate-400 hover:text-white transition-colors">All</button>
+              </div>
+              <button class="flex items-center gap-2 rounded-lg bg-white/5 border border-white/5 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10 transition-colors">
+                <span class="material-symbols-outlined text-lg">download</span>
+                <span>Export Report</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="relative overflow-hidden rounded-xl bg-card-dark p-6 border border-white/5 group">
+              <div class="absolute -right-6 -top-6 size-24 rounded-full bg-primary/10 blur-xl"></div>
+              <div class="flex items-center gap-3 mb-4">
+                <div class="rounded-lg bg-primary/20 p-2 text-primary-light">
+                  <span class="material-symbols-outlined">payments</span>
+                </div>
+                <p class="text-sm font-medium text-slate-400">Total Revenue</p>
+              </div>
+              <div class="flex items-end justify-between">
+                <div>
+                  <h3 id="kpi-revenue" class="text-2xl font-bold text-white">--</h3>
+                  <p class="text-xs text-slate-500 mt-1">Aggregated across all nodes</p>
+                </div>
+                <span class="flex items-center text-sm font-medium text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded">
+                  <span class="material-symbols-outlined text-sm mr-1">trending_up</span>
+                  12.5%
+                </span>
+              </div>
+            </div>
+
+            <div class="relative overflow-hidden rounded-xl bg-card-dark p-6 border border-white/5 group">
+              <div class="absolute -right-6 -top-6 size-24 rounded-full bg-accent-orange/10 blur-xl"></div>
+              <div class="flex items-center gap-3 mb-4">
+                <div class="rounded-lg bg-accent-orange/20 p-2 text-accent-orange">
+                  <span class="material-symbols-outlined">storefront</span>
+                </div>
+                <p class="text-sm font-medium text-slate-400">Active Mini-Stores</p>
+              </div>
+              <div class="flex items-end justify-between">
+                <div>
+                  <h3 id="kpi-stores" class="text-2xl font-bold text-white">--</h3>
+                  <p class="text-xs text-slate-500 mt-1">live</p>
+                </div>
+                <span class="flex items-center text-sm font-medium text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded">
+                  <span class="material-symbols-outlined text-sm mr-1">trending_up</span>
+                  5%
+                </span>
+              </div>
+            </div>
+
+            <div class="relative overflow-hidden rounded-xl bg-card-dark p-6 border border-white/5 group">
+              <div class="absolute -right-6 -top-6 size-24 rounded-full bg-blue-500/10 blur-xl"></div>
+              <div class="flex items-center gap-3 mb-4">
+                <div class="rounded-lg bg-blue-500/20 p-2 text-blue-400">
+                  <span class="material-symbols-outlined">fingerprint</span>
+                </div>
+                <p class="text-sm font-medium text-slate-400">Live Sessions</p>
+              </div>
+              <div class="flex items-end justify-between">
+                <div>
+                  <h3 id="kpi-sessions" class="text-2xl font-bold text-white">--</h3>
+                  <p class="text-xs text-slate-500 mt-1">live</p>
+                </div>
+                <span class="flex items-center text-sm font-medium text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded">
+                  <span class="material-symbols-outlined text-sm mr-1">trending_up</span>
+                  8%
+                </span>
+              </div>
+            </div>
+
+            <div class="relative overflow-hidden rounded-xl bg-card-dark p-6 border border-white/5 group">
+              <div class="absolute -right-6 -top-6 size-24 rounded-full bg-purple-500/10 blur-xl"></div>
+              <div class="flex items-center gap-3 mb-4">
+                <div class="rounded-lg bg-purple-500/20 p-2 text-purple-400">
+                  <span class="material-symbols-outlined">currency_bitcoin</span>
+                </div>
+                <p class="text-sm font-medium text-slate-400">Global GMV (ETH)</p>
+              </div>
+              <div class="flex items-end justify-between">
+                <div>
+                  <h3 id="kpi-gmv" class="text-2xl font-bold text-white">--</h3>
+                  <p class="text-xs text-slate-500 mt-1">live</p>
+                </div>
+                <span class="flex items-center text-sm font-medium text-accent-orange bg-accent-orange/10 px-2 py-0.5 rounded">
+                  <span class="material-symbols-outlined text-sm mr-1">trending_down</span>
+                  2%
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-xl bg-card-dark border border-white/5 p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h2 class="text-lg font-bold text-white">Revenue Ecosystem</h2>
+                <p class="text-sm text-slate-400">Live bars from Sanora product prices</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 px-3 py-1 rounded bg-white/5">
+                  <div class="size-2 rounded-full bg-primary"></div>
+                  <span class="text-xs text-white">Products</span>
+                </div>
+              </div>
+            </div>
+            <div id="bar-revenue" class="relative h-64 w-full flex items-end gap-2 sm:gap-4 px-2">
+              <div class="text-slate-500 text-sm">Loading bars…</div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 rounded-xl bg-card-dark border border-white/5 flex flex-col">
+              <div class="p-6 border-b border-white/5 flex justify-between items-center">
+                <h3 class="font-bold text-white">Top Performing Mini-Stores</h3>
+                <button class="text-xs font-semibold text-primary hover:text-primary-light">Refresh</button>
+              </div>
+              <div class="p-2">
+                <table class="w-full text-left border-collapse">
+                  <thead>
+                    <tr>
+                      <th class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Store Name</th>
+                      <th class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider hidden sm:table-cell">Owner (Wallet)</th>
+                      <th class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right">Volume</th>
+                      <th class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="top-stores-body" class="text-sm">
+                    <tr><td class="p-4 text-slate-500" colspan="4">Loading stores...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="rounded-xl bg-card-dark border border-white/5 flex flex-col">
+              <div class="p-6 border-b border-white/5 flex justify-between items-center">
+                <h3 class="font-bold text-white">Live Activity</h3>
+                <div class="size-2 rounded-full bg-red-500 animate-pulse"></div>
+              </div>
+              <div id="live-feed" class="flex-1 overflow-y-auto max-h-[400px] p-4 flex flex-col gap-4">
+                <p class="text-slate-400 text-sm">Loading feed...</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-xl bg-card-dark border border-white/5 p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-bold text-white">Service Health</h3>
+              <span class="text-xs text-slate-400">Sanora / Dolores / Covenant</span>
+            </div>
+            <div id="service-health" class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div class="text-slate-400 text-sm">Checking services...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+<script type="module" src="admin-analytics.js"></script><script src="nav.js"></script></body>
+</html>
+
+
+
+
+

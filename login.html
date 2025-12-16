@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Fledge Base - Cryptographic Login</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" />
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#7f13ec",
+            "secondary-orange": "#ff8c00",
+            "background-light": "#f7f6f8",
+            "background-dark": "#191022",
+            "card-dark": "#231830"
+          },
+          fontFamily: { display: ["Inter", "sans-serif"] },
+          borderRadius: {
+            DEFAULT: "0.25rem",
+            lg: "0.5rem",
+            xl: "0.75rem",
+            "2xl": "1rem",
+            full: "9999px"
+          },
+          backgroundImage: {
+            "gradient-brand": "linear-gradient(135deg, #7f13ec 0%, #ff8c00 100%)",
+            "gradient-dark": "linear-gradient(180deg, rgba(25,16,34,0) 0%, #191022 100%)"
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #191022; }
+    ::-webkit-scrollbar-thumb { background: #473b54; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #7f13ec; }
+  </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display antialiased selection:bg-primary selection:text-white overflow-x-hidden min-h-screen flex flex-col">
+<div id="toast-container" role="status" aria-live="polite" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+  <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#302839] px-6 lg:px-10 py-4 bg-[#141118]/80 backdrop-blur-md sticky top-0 z-50">
+    <div class="flex items-center gap-4 text-white">
+      <div class="size-8 flex items-center justify-center rounded-lg bg-gradient-brand text-white shadow-lg shadow-primary/20">
+        <span class="material-symbols-outlined text-[20px]">encrypted</span>
+      </div>
+      <h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em]">The Fledge Base</h2>
+    </div>
+    <div class="hidden md:flex flex-1 justify-end gap-8 items-center">
+      <div class="flex items-center gap-8">
+        <a class="text-gray-400 hover:text-white transition-colors text-sm font-medium leading-normal" href="#">White Label Stores</a>
+        <a class="text-gray-400 hover:text-white transition-colors text-sm font-medium leading-normal" href="#">Documentation</a>
+        <a class="text-gray-400 hover:text-white transition-colors text-sm font-medium leading-normal" href="#">Support</a>
+      </div>
+      <a href="console.html" class="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-9 px-4 bg-white/10 hover:bg-white/20 text-white text-sm font-bold transition-all border border-white/5">
+        <span>Enter Dashboard</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="flex-grow flex flex-col items-center justify-center p-4 relative">
+    <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
+      <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[128px]"></div>
+      <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary-orange/10 rounded-full blur-[128px]"></div>
+    </div>
+    <div class="w-full max-w-[520px] z-10">
+      <div class="mb-8">
+        <div class="flex justify-between items-end mb-3 px-1">
+          <p class="text-white text-sm font-medium">Step 3 of 3</p>
+          <p class="text-primary text-sm font-bold">Identity Established</p>
+        </div>
+        <div class="flex gap-2 h-1.5 w-full">
+          <div class="h-full rounded-full bg-primary flex-1"></div>
+          <div class="h-full rounded-full bg-primary flex-1"></div>
+          <div class="h-full rounded-full bg-gradient-brand flex-1 animate-pulse"></div>
+        </div>
+      </div>
+
+      <div class="bg-card-dark border border-[#302839] rounded-2xl shadow-2xl overflow-hidden relative group">
+        <div class="h-1 w-full bg-gradient-brand"></div>
+        <div class="p-8 flex flex-col items-center text-center">
+          <div class="mb-6 relative">
+            <div class="absolute inset-0 bg-gradient-brand blur-xl opacity-40 rounded-full"></div>
+            <div class="relative size-16 bg-[#141118] border border-white/10 rounded-full flex items-center justify-center">
+              <span class="material-symbols-outlined text-3xl text-white bg-clip-text bg-gradient-brand">fingerprint</span>
+            </div>
+          </div>
+          <h1 class="text-white text-2xl md:text-3xl font-bold mb-3 tracking-tight">Identity Secured</h1>
+          <p class="text-gray-400 text-sm md:text-base leading-relaxed mb-8 max-w-sm">
+            Your browser has successfully generated a unique cryptographic key pair. Below is your sessionless emoji identifier.
+          </p>
+
+          <div class="w-full mb-8 group/vault cursor-pointer relative">
+            <div class="absolute -inset-0.5 bg-gradient-brand rounded-xl opacity-75 blur group-hover/vault:opacity-100 transition duration-500"></div>
+            <div class="relative w-full bg-[#141118] rounded-xl p-5 border border-white/10 flex flex-col gap-3">
+              <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                <span class="text-xs font-semibold text-gray-500 uppercase tracking-widest">Public UUID</span>
+                <span class="flex items-center gap-1 text-xs text-primary font-medium">
+                  <span class="material-symbols-outlined text-[14px]">content_copy</span> Click to copy
+                </span>
+              </div>
+              <div class="flex justify-center gap-2 sm:gap-4 text-2xl sm:text-3xl py-2 select-all">
+                <span id="session-emoji" class="flex gap-1 text-2xl sm:text-3xl">-</span>
+              </div>
+            </div>
+            <div class="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 group-active/vault:opacity-100 transition-opacity bg-white text-black text-xs font-bold py-1 px-3 rounded shadow-lg pointer-events-none">
+              Copied!
+            </div>
+          </div>
+
+          <div class="w-full bg-orange-500/10 border border-orange-500/20 rounded-lg p-4 mb-8 flex gap-3 text-left">
+            <span class="material-symbols-outlined text-orange-500 shrink-0 mt-0.5">warning</span>
+            <div class="flex flex-col gap-1">
+              <h4 class="text-orange-100 text-sm font-bold">No Password Reset</h4>
+              <p class="text-orange-200/70 text-xs leading-normal">
+                We do not store your private keys. If you lose this session, you will need your downloaded key file to restore access.
+              </p>
+            </div>
+          </div>
+
+          <div class="w-full flex flex-col gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button id="btn-gen-keys" class="w-full h-12 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold rounded-lg transition-all flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-lg">key</span>
+                <span>Generate Keys</span>
+              </button>
+              <button id="btn-mint" class="w-full h-12 bg-gradient-brand hover:brightness-110 text-white font-bold rounded-lg shadow-lg shadow-primary/25 transition-all flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-lg">bolt</span>
+                <span>Mint Identity</span>
+              </button>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <input id="hash-input" class="w-full bg-card-dark border border-white/10 rounded-lg px-4 py-2 text-sm text-white placeholder-slate-500" placeholder="hash-abc123" />
+              <input id="login-uuid" class="w-full bg-card-dark border border-white/10 rounded-lg px-4 py-2 text-sm text-white placeholder-slate-500" placeholder="UUID" />
+              <input id="login-priv" class="w-full bg-card-dark border border-white/10 rounded-lg px-4 py-2 text-sm text-white placeholder-slate-500" placeholder="Private key" />
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button id="btn-login" class="w-full h-11 bg-primary/80 hover:bg-primary text-white font-semibold rounded-lg flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-lg">login</span>
+                <span>Login with Saved</span>
+              </button>
+              <button id="btn-export-id" class="w-full h-11 bg-transparent hover:bg-white/5 border border-white/10 text-gray-300 hover:text-white font-medium rounded-lg transition-all flex items-center justify-center gap-2 text-sm">
+                <span class="material-symbols-outlined text-lg">download</span>
+                <span>Download Key Bundle</span>
+              </button>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="flex items-center justify-center gap-2 text-xs text-slate-400 bg-white/5 rounded-lg px-3 py-2 border border-white/10">
+                <span class="text-slate-500">UUID:</span>
+                <span id="session-uuid" class="font-mono text-white truncate">-</span>
+              </div>
+              <div class="flex items-center justify-center gap-2 text-xs text-slate-400 bg-white/5 rounded-lg px-3 py-2 border border-white/10">
+                <span class="text-slate-500">Hash:</span>
+                <span id="session-hash" class="font-mono text-white truncate">-</span>
+              </div>
+            </div>
+            <a href="console.html" class="w-full h-11 bg-gradient-brand hover:brightness-110 text-white font-bold rounded-lg shadow-lg shadow-primary/25 transition-all flex items-center justify-center gap-2">
+              <span>Enter Dashboard</span>
+              <span class="material-symbols-outlined text-lg">arrow_forward</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="bg-[#1c1425] border-t border-[#302839] p-3 text-center">
+          <p class="text-[10px] text-gray-500 flex items-center justify-center gap-1">
+            <span class="material-symbols-outlined text-[12px]">lock</span>
+            End-to-end encrypted session
+          </p>
+        </div>
+      </div>
+
+      <div class="flex justify-center gap-6 mt-8">
+        <a class="text-xs text-gray-500 hover:text-primary transition-colors" href="#">Privacy Policy</a>
+        <a class="text-xs text-gray-500 hover:text-primary transition-colors" href="#">Terms of Service</a>
+        <a class="text-xs text-gray-500 hover:text-primary transition-colors" href="#">Help Center</a>
+      </div>
+    </div>
+
+    <div class="hidden xl:block absolute right-10 top-1/2 -translate-y-1/2 w-80 p-6 bg-card-dark/50 border border-white/5 rounded-2xl backdrop-blur-sm">
+      <h3 class="text-white font-bold mb-4 flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary">hub</span>
+        Node Activity
+      </h3>
+      <div class="space-y-4">
+        <div class="flex items-center gap-3">
+          <div class="size-8 rounded bg-white/5 flex items-center justify-center">
+            <div class="size-full bg-gradient-to-br from-purple-500 to-blue-500 opacity-50"></div>
+          </div>
+          <div class="flex-1">
+            <div class="h-2 w-24 bg-white/10 rounded mb-1.5"></div>
+            <div class="h-1.5 w-16 bg-white/5 rounded"></div>
+          </div>
+          <span class="text-xs text-green-400">Active</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="size-8 rounded bg-white/5 flex items-center justify-center">
+            <div class="size-full bg-gradient-to-br from-orange-500 to-red-500 opacity-50"></div>
+          </div>
+          <div class="flex-1">
+            <div class="h-2 w-20 bg-white/10 rounded mb-1.5"></div>
+            <div class="h-1.5 w-12 bg-white/5 rounded"></div>
+          </div>
+          <span class="text-xs text-gray-500">2m ago</span>
+        </div>
+        <div class="p-3 mt-2 rounded bg-primary/10 border border-primary/20">
+          <p class="text-[10px] text-primary-200">
+            The Fledge Base uses decentralized identifiers to ensure you own your data across all white label stores.
+          </p>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script type="module" src="script.js"></script>
+<script src="nav.js"></script></body>
+</html>
+

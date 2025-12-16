@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fledge Userflow Console</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="toast-container" role="status" aria-live="polite" style="position:fixed;top:16px;right:16px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none;"></div>
+  <div class="container">
+    <header class="top">
+      <div class="brand">
+        <p class="eyebrow">Fledge</p>
+        <h1>Userflow Console</h1>
+        <p class="muted">Guided onboarding from sessionless auth to mini-store.</p>
+      </div>
+      <div class="status-stack">
+        <div class="form-row slim">
+          <label for="env-select">Environment</label>
+          <select id="env-select">
+            <option value="prod">Prod Aú base.thefledge.com</option>
+            <option value="stage">Stage Aú localhost:3000+</option>
+            <option value="local">Local Aú http://localhost</option>
+          </select>
+        </div>
+        <div class="pills compact">
+          <button class="pill soft copy-btn" data-copy="session-uuid" aria-label="Copy UUID">UUID: <strong id="session-uuid">-</strong></button>
+          <button class="pill soft copy-btn" data-copy="session-emoji" aria-label="Copy emoji code">Emoji: <strong id="session-emoji">-</strong></button>
+          <button class="pill soft copy-btn" data-copy="session-hash" aria-label="Copy hash">Hash: <strong id="session-hash">-</strong></button>
+        </div>
+      </div>
+    </header>
+
+    <section class="layout">
+      <div class="column">
+        <div class="card" id="quickstart">
+          <div class="card-header">
+            <div>
+              <p class="eyebrow">Quick Start</p>
+              <h2>Sessionless onboarding</h2>
+            </div>
+          </div>
+          <div class="card-body vertical-gap">
+            <div class="wizard">
+              <div class="wizard-step">
+                <div>
+                  <h3>1. Generate keys</h3>
+                  <p class="muted small">Sessionless secp256k1 + keccak.</p>
+                </div>
+                <div class="actions">
+                  <button id="btn-gen-keys" class="primary">Generate keys</button>
+                </div>
+                <div class="grid two">
+                  <div>
+                    <label for="pubkey-display">Public key</label>
+                    <input id="pubkey-display" type="text" readonly />
+                  </div>
+                  <div>
+                    <label for="privkey-display">Private key</label>
+                    <input id="privkey-display" type="text" readonly />
+                  </div>
+                </div>
+              </div>
+
+              <div class="wizard-step">
+                <div>
+                  <h3>2. Mint user</h3>
+                  <p class="muted small">Continuebee + BDO + Sanora.</p>
+                </div>
+                <div class="actions">
+                  <button id="btn-mint" class="secondary">Mint account</button>
+                  <button id="btn-login" class="ghost">Login with saved</button>
+                  <button id="btn-logout" class="ghost">Logout</button>
+                </div>
+                <div class="grid three">
+                  <div>
+                    <label for="hash-input">Hash / state id</label>
+                    <div class="inline">
+                      <input id="hash-input" type="text" placeholder="hash-abc123" />
+                      <button id="btn-random-hash" class="ghost">Random</button>
+                    </div>
+                  </div>
+                  <div>
+                    <label for="login-uuid">UUID</label>
+                    <input id="login-uuid" type="text" placeholder="uuid" />
+                  </div>
+                  <div>
+                    <label for="login-priv">Private key</label>
+                    <input id="login-priv" type="text" placeholder="paste priv" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="wizard-step">
+                <div>
+                  <h3>3. Profile</h3>
+                  <p class="muted small">Store basic profile into BDO.</p>
+                </div>
+                <div class="actions">
+                  <button id="btn-save-profile" class="primary">Save profile</button>
+                </div>
+                <div class="grid two">
+                  <div>
+                    <label for="profile-name">Name</label>
+                    <input id="profile-name" type="text" placeholder="Your name" />
+                  </div>
+                  <div>
+                    <label for="profile-email">Email</label>
+                    <input id="profile-email" type="email" placeholder="you@example.com" />
+                  </div>
+                </div>
+                <div>
+                  <label for="profile-bio">Bio</label>
+                  <textarea id="profile-bio" rows="2" placeholder="Short bio"></textarea>
+                </div>
+              </div>
+
+              <div class="wizard-step">
+                <div>
+                  <h3>4. Mini store</h3>
+                  <p class="muted small">Create referral link and visibility.</p>
+                </div>
+                <div class="actions">
+                  <button id="btn-save-store" class="primary">Save store</button>
+                  <button id="btn-visit-store" class="secondary" disabled>Visit</button>
+                  <button id="btn-copy-store" class="ghost">Copy link</button>
+                </div>
+                <div class="grid two">
+                  <div>
+                    <label for="store-name">Store name</label>
+                    <input id="store-name" type="text" placeholder="My Fledge Store" />
+                  </div>
+                  <div>
+                    <label for="store-public">Visibility</label>
+                    <select id="store-public">
+                      <option value="true">Public (listed)</option>
+                      <option value="false">Unlisted</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="pills compact">
+                  <button class="pill soft copy-btn" data-copy="store-link" aria-label="Copy store link">Referral link: <strong id="store-link">-</strong></button>
+                  <span class="pill soft">Code: <strong id="store-code">-</strong></span>
+                </div>
+              </div>
+
+              <div class="wizard-step">
+                <div>
+                  <h3>5. Seed products</h3>
+                  <p class="muted small">Starter catalog into Sanora.</p>
+                </div>
+                <div class="actions">
+                  <button id="btn-seed-products" class="secondary">Seed starter items</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="column">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <p class="eyebrow">Identity</p>
+              <h2>Export / import</h2>
+            </div>
+            <div class="actions slim">
+              <button id="btn-export-id" class="ghost">Download identity</button>
+              <label class="btn-file ghost">
+                Upload
+                <input id="btn-import-id" type="file" accept="application/json" hidden />
+              </label>
+            </div>
+          </div>
+          <div class="card-body">
+            <p class="muted small">Bundle includes uuid, hash, keys, sanora uuid.</p>
+          </div>
+        </div>
+
+        <div class="card" id="products-card">
+          <div class="card-header">
+            <div>
+              <p class="eyebrow">Products</p>
+              <h2>Sanora catalog</h2>
+            </div>
+            <div class="actions slim">
+              <button id="btn-save-product" class="primary">Save product</button>
+              <button id="btn-load-my-products" class="ghost">Refresh mine</button>
+              <button id="btn-load-global" class="ghost">Refresh global</button>
+            </div>
+          </div>
+          <div class="card-body vertical-gap">
+            <div class="form-row two">
+              <div>
+                <label for="product-title">Title</label>
+                <input id="product-title" type="text" placeholder="Awesome thing" />
+              </div>
+              <div>
+                <label for="product-price">Price (USD)</label>
+                <input id="product-price" type="text" placeholder="19.99" />
+              </div>
+            </div>
+            <div class="form-row">
+              <label for="product-description">Description</label>
+              <textarea id="product-description" rows="2" placeholder="Describe it"></textarea>
+            </div>
+            <div class="form-row two">
+              <div>
+                <label for="product-photo">Photo URL</label>
+                <input id="product-photo" type="text" placeholder="https://..." />
+              </div>
+              <div>
+                <label for="product-public">Visibility</label>
+                <select id="product-public">
+                  <option value="global">Global (store + global)</option>
+                  <option value="store">Store only</option>
+                  <option value="private">Private (hidden)</option>
+                </select>
+              </div>
+            </div>
+            <p class="hint">Global products appear in every store; Store-only products stay on your link. Private items remain hidden.</p>
+            <div class="list-block">
+              <div class="list-head">
+                <p class="eyebrow tiny">My products</p>
+              </div>
+              <div id="product-grid" class="product-grid three"></div>
+            </div>
+            <div class="list-block">
+              <div class="list-head">
+                <p class="eyebrow tiny">Global products</p>
+              </div>
+              <div id="global-grid" class="product-grid three"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <p class="eyebrow">Admin</p>
+              <h2>Advanced controls</h2>
+              <p class="muted small">Raw BDO JSON (read/write) and Addie stubs.</p>
+            </div>
+          </div>
+          <div class="card-body vertical-gap">
+            <div class="form-row">
+              <label for="bdo-editor">BDO JSON</label>
+              <textarea id="bdo-editor" rows="6" placeholder='{"profile":{},"store":{}}'></textarea>
+            </div>
+            <div class="actions slim">
+              <button id="btn-fetch-bdo" class="ghost">Fetch</button>
+              <button id="btn-update-bdo" class="secondary">Update</button>
+              <button id="btn-delete-user" class="danger">Delete user</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card console">
+          <div class="card-header">
+            <div>
+              <p class="eyebrow">Log</p>
+              <h2>Requests</h2>
+            </div>
+          </div>
+          <pre id="log">Ready...</pre>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script type="module" src="script.js"></script>
+<script src="nav.js"></script></body>
+</html>
+

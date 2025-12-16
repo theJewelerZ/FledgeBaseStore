@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Fledge Base Global Store Dashboard</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" />
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#7f13ec",
+            "secondary-orange": "#f97316",
+            "background-light": "#f7f6f8",
+            "background-dark": "#191022",
+            "surface-dark": "#231b2e",
+            "surface-darker": "#110c16"
+          },
+          fontFamily: { display: ["Inter", "sans-serif"] },
+          borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px" },
+          backgroundImage: {
+            "gradient-purple-orange": "linear-gradient(135deg, #7f13ec 0%, #f97316 100%)",
+            "gradient-dark-card": "linear-gradient(180deg, rgba(35, 27, 46, 0.9) 0%, rgba(17, 12, 22, 0.9) 100%)"
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #191022; }
+    ::-webkit-scrollbar-thumb { background: #4a4a55; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #7f13ec; }
+  </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display overflow-x-hidden antialiased selection:bg-primary selection:text-white">
+  <div class="flex h-screen w-full overflow-hidden">
+    <aside class="hidden md:flex flex-col w-64 bg-surface-dark border-r border-white/5 h-full flex-shrink-0 z-20">
+      <div class="p-6 flex items-center gap-3">
+        <div class="size-10 rounded-xl bg-gradient-purple-orange flex items-center justify-center shadow-lg shadow-primary/20">
+          <span class="material-symbols-outlined text-white">hub</span>
+        </div>
+        <div>
+          <h1 class="text-white text-lg font-bold leading-tight tracking-tight">The Fledge Base</h1>
+          <p class="text-slate-400 text-xs font-medium">Command Center</p>
+        </div>
+      </div>
+      <nav class="flex-1 px-4 flex flex-col gap-2 mt-4 overflow-y-auto">
+        <a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/10 border border-primary/20 text-white group transition-all duration-200" href="#">
+          <span class="material-symbols-outlined text-primary group-hover:text-white transition-colors">dashboard</span>
+          <span class="text-sm font-medium">Dashboard</span>
+        </a>
+        <a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 text-slate-400 hover:text-white transition-all duration-200" href="#">
+          <span class="material-symbols-outlined">storefront</span>
+          <span class="text-sm font-medium">Mini-Stores</span>
+        </a>
+        <a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 text-slate-400 hover:text-white transition-all duration-200" href="#">
+          <span class="material-symbols-outlined">group</span>
+          <span class="text-sm font-medium">User Ledger</span>
+        </a>
+        <a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 text-slate-400 hover:text-white transition-all duration-200" href="#">
+          <span class="material-symbols-outlined">verified_user</span>
+          <span class="text-sm font-medium">Crypto-Auth Logs</span>
+        </a>
+        <div class="h-px bg-white/10 my-2 mx-2"></div>
+        <a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 text-slate-400 hover:text-white transition-all duration-200" href="#">
+          <span class="material-symbols-outlined">settings</span>
+          <span class="text-sm font-medium">Global Settings</span>
+        </a>
+      </nav>
+      <div class="p-4 mt-auto">
+        <div class="bg-gradient-to-br from-surface-darker to-primary/20 rounded-xl p-4 border border-white/5">
+          <div class="flex items-center gap-2 mb-2">
+            <div class="size-2 rounded-full bg-green-500 animate-pulse"></div>
+            <p class="text-xs font-bold text-green-400 uppercase tracking-wider">System Operational</p>
+          </div>
+          <p class="text-xs text-slate-500">Node Latency: 24ms</p>
+          <p class="text-xs text-slate-500">Active Wallets: 12.4k</p>
+        </div>
+      </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-full overflow-hidden bg-background-dark relative">
+      <header class="h-16 border-b border-white/5 bg-surface-dark/50 backdrop-blur-md flex items-center justify-between px-6 z-10 sticky top-0">
+        <div class="flex items-center md:hidden gap-3">
+          <button class="text-white">
+            <span class="material-symbols-outlined">menu</span>
+          </button>
+          <span class="font-bold text-white">The Fledge Base</span>
+        </div>
+        <div class="hidden md:flex flex-col">
+          <h2 class="text-white text-lg font-bold">Global Overview</h2>
+          <p class="text-slate-400 text-xs">Real-time aggregation across all mini-stores</p>
+        </div>
+        <div class="flex items-center gap-4">
+          <div class="hidden sm:flex items-center bg-surface-darker rounded-lg px-3 py-1.5 border border-white/5 w-64">
+            <span class="material-symbols-outlined text-slate-500 text-lg">search</span>
+            <input class="bg-transparent border-none text-sm text-white focus:ring-0 placeholder-slate-600 w-full ml-2" placeholder="Search stores, hashes, or users..." type="text" />
+          </div>
+          <button class="flex items-center justify-center h-9 px-4 rounded-lg bg-gradient-purple-orange text-white text-sm font-bold shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 transition-shadow">
+            <span class="mr-2 material-symbols-outlined text-lg">campaign</span>
+            Broadcast
+          </button>
+        </div>
+      </header>
+
+      <div class="flex-1 overflow-y-auto p-6 scroll-smooth">
+        <div class="max-w-7xl mx-auto flex flex-col gap-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-surface-dark border border-white/5 rounded-xl p-5 relative overflow-hidden group">
+              <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <span class="material-symbols-outlined text-6xl text-primary">inventory_2</span>
+              </div>
+              <p class="text-slate-400 text-sm font-medium mb-1">Global Products (Sanora)</p>
+              <h3 id="stat-global-products" class="text-white text-3xl font-black tracking-tight">--</h3>
+              <div class="flex items-center gap-1 mt-2 text-slate-400 text-xs font-medium">
+                <span class="material-symbols-outlined text-sm text-primary">public</span>
+                <span id="stat-global-visibility">–</span>
+              </div>
+              <p id="stat-host" class="text-slate-500 text-xs mt-1 truncate"></p>
+            </div>
+            <div class="bg-surface-dark border border-white/5 rounded-xl p-5 relative overflow-hidden group">
+              <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <span class="material-symbols-outlined text-6xl text-secondary-orange">store</span>
+              </div>
+              <p class="text-slate-400 text-sm font-medium mb-1">My Store Products</p>
+              <h3 id="stat-store-products" class="text-white text-3xl font-black tracking-tight">--</h3>
+              <div class="flex items-center gap-1 mt-2 text-slate-400 text-xs font-medium">
+                <span class="material-symbols-outlined text-sm text-secondary-orange">link</span>
+                <span id="stat-store-id">No store detected</span>
+              </div>
+              <button id="btn-open-store" class="mt-3 inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-semibold transition-all disabled:opacity-50" disabled>
+                <span class="material-symbols-outlined text-sm">open_in_new</span> Visit Store
+              </button>
+            </div>
+            <div class="bg-surface-dark border border-white/5 rounded-xl p-5 relative overflow-hidden group">
+              <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <span class="material-symbols-outlined text-6xl text-primary">health_and_safety</span>
+              </div>
+              <p class="text-slate-400 text-sm font-medium mb-1">Service Health</p>
+              <h3 id="stat-services-up" class="text-white text-3xl font-black tracking-tight">--</h3>
+              <div class="flex items-center gap-1 mt-2 text-slate-400 text-xs font-medium">
+                <span class="material-symbols-outlined text-sm text-green-400">check_circle</span>
+                <span id="stat-services-note">Checking...</span>
+              </div>
+            </div>
+            <div class="bg-gradient-purple-orange rounded-xl p-5 relative overflow-hidden text-white shadow-lg shadow-primary/20">
+              <div class="absolute top-0 right-0 p-4 opacity-20">
+                <span class="material-symbols-outlined text-6xl">schedule</span>
+              </div>
+              <p class="text-white/80 text-sm font-medium mb-1">Last Sync</p>
+              <h3 id="stat-last-sync" class="text-white text-3xl font-black tracking-tight">--</h3>
+              <div class="flex items-center gap-1 mt-2 text-white/80 text-xs font-medium bg-white/10 w-fit px-2 py-0.5 rounded-full backdrop-blur-sm">
+                <span class="material-symbols-outlined text-sm">refresh</span>
+                <span id="stat-sync-note">Waiting for data</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-auto lg:h-[500px]">
+            <div class="lg:col-span-2 bg-surface-dark border border-white/5 rounded-xl p-6 flex flex-col h-full">
+              <div class="flex items-center justify-between mb-6">
+                <div>
+                  <h3 class="text-white text-lg font-bold">Visibility Breakdown</h3>
+                  <p class="text-slate-400 text-sm">Global + store products grouped by visibility</p>
+                </div>
+                <div class="flex gap-2">
+                  <button id="btn-refresh-admin" class="px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-semibold">Refresh</button>
+                </div>
+              </div>
+              <div class="flex-1 w-full h-full relative">
+                <div class="absolute inset-0 flex flex-col justify-between pointer-events-none">
+                  <div class="w-full h-px bg-white/5"></div>
+                  <div class="w-full h-px bg-white/5"></div>
+                  <div class="w-full h-px bg-white/5"></div>
+                </div>
+                <div id="visibility-bars" class="absolute inset-0 flex items-end gap-3 px-2"></div>
+              </div>
+              <div class="flex justify-between text-xs text-slate-500 font-mono mt-4 px-2">
+                <span>Global</span><span>Store</span><span>Private</span>
+                <span class="ml-auto text-right text-slate-400" id="visibility-total">-- total</span>
+              </div>
+            </div>
+
+            <div class="lg:col-span-1 bg-surface-dark border border-white/5 rounded-xl flex flex-col overflow-hidden h-full">
+              <div class="p-4 border-b border-white/5 flex justify-between items-center bg-surface-darker">
+                <h3 class="text-white text-base font-bold">Service Health</h3>
+                <span id="service-health-pill" class="flex items-center gap-1.5 px-2 py-1 rounded bg-white/10 border border-white/10 text-white text-xs font-bold">
+                  <span class="size-1.5 rounded-full bg-yellow-400 animate-pulse"></span>
+                  Checking
+                </span>
+              </div>
+              <div class="flex-1 bg-surface-darker p-4 space-y-3 overflow-y-auto" id="service-list">
+                <p class="text-slate-400 text-sm">Loading service statuses…</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 bg-surface-dark border border-white/5 rounded-xl flex flex-col">
+              <div class="p-6 border-b border-white/5 flex justify-between items-center">
+                <h3 class="text-white text-lg font-bold">Global Products (live)</h3>
+                <button id="btn-refresh-products" class="text-primary text-sm font-medium hover:text-white transition-colors">Refresh</button>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-slate-400">
+                  <thead class="bg-surface-darker text-xs uppercase font-medium border-b border-white/5">
+                    <tr>
+                      <th class="px-6 py-4">Title</th>
+                      <th class="px-6 py-4">Store</th>
+                      <th class="px-6 py-4 text-right">Price</th>
+                      <th class="px-6 py-4 text-center">Visibility</th>
+                    </tr>
+                  </thead>
+                  <tbody id="global-products-body" class="divide-y divide-white/5">
+                    <tr><td class="px-6 py-4 text-slate-500" colspan="4">Loading products…</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="lg:col-span-1 bg-surface-dark border border-white/5 rounded-xl flex flex-col h-full max-h-[400px] lg:max-h-full">
+              <div class="p-6 border-b border-white/5 flex justify-between items-center">
+                <h3 class="text-white text-lg font-bold">Live Activity Feed</h3>
+                <div class="size-2 rounded-full bg-secondary-orange animate-pulse"></div>
+              </div>
+              <div id="activity-feed" class="p-4 flex-1 overflow-y-auto space-y-4">
+                <p class="text-slate-400 text-sm">Loading live feed…</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-6">
+            <div class="rounded-xl bg-card-dark border border-white/5 p-6">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="font-bold text-white">Top Products by Price</h3>
+                <span class="text-xs text-slate-500" id="product-performance-total">--</span>
+              </div>
+              <div id="product-performance" class="space-y-4">
+                <p class="text-slate-400 text-sm">Awaiting product data…</p>
+              </div>
+            </div>
+            <div class="rounded-xl bg-card-dark border border-white/5 p-6 flex flex-col">
+              <h3 class="font-bold text-white mb-3">BDO Snapshot</h3>
+              <p class="text-slate-400 text-sm mb-4">Pulled from your stored profile + store in BDO.</p>
+              <div class="space-y-3 text-sm text-white">
+                <div class="flex justify-between items-center">
+                  <span class="text-slate-400">Profile</span>
+                  <span id="bdo-profile-name" class="font-semibold">--</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-slate-400">Email</span>
+                  <span id="bdo-profile-email" class="font-mono text-xs text-slate-200">--</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-slate-400">Store</span>
+                  <span id="bdo-store-name" class="font-semibold">--</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-slate-400">Store Code</span>
+                  <span id="bdo-store-code" class="font-mono text-xs text-slate-200">--</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="max-w-7xl mx-auto mt-8 pt-6 border-t border-white/5 flex flex-col md:flex-row justify-between items-center text-slate-500 text-xs pb-6 px-6">
+        <p>© 2024 The Fledge Base. All decentralized rights reserved.</p>
+        <div class="flex gap-4 mt-4 md:mt-0">
+          <a class="hover:text-white transition-colors" href="#">Documentation</a>
+          <a class="hover:text-white transition-colors" href="#">API Keys</a>
+          <a class="hover:text-white transition-colors" href="#">Node Status</a>
+        </div>
+      </footer>
+    </main>
+  </div>
+  <script type="module" src="admin.js"></script>
+<script src="nav.js"></script></body>
+</html>
+

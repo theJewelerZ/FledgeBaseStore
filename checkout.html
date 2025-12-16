@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Brandable Checkout - The Fledge Base</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#9333ea",
+            accent: "#f97316",
+            "background-light": "#f6f6f8",
+            "background-dark": "#101622"
+          },
+          fontFamily: { display: ["Inter", "sans-serif"] },
+          borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px" }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
+  </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#111318] dark:text-white min-h-screen flex flex-col font-display">
+<div id="toast-container" role="status" aria-live="polite" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+  <header class="sticky top-0 z-50 bg-white dark:bg-[#1a202c] border-b border-[#f0f2f4] dark:border-[#2d3748]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex items-center gap-4">
+          <div class="flex items-center justify-center size-10 rounded-lg bg-gradient-to-br from-primary/10 to-accent/10 text-primary">
+            <span class="material-symbols-outlined">storefront</span>
+          </div>
+          <h2 class="text-lg font-bold leading-tight tracking-tight text-[#111318] dark:text-white">The Fledge Base Checkout</h2>
+        </div>
+        <div class="flex items-center gap-4">
+          <button id="btn-login-key" class="hidden md:flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-primary to-accent text-white text-sm font-bold hover:opacity-90 transition-opacity shadow-sm shadow-purple-500/20">
+            <span class="material-symbols-outlined text-[20px]">vpn_key</span>
+            <span>Log In with Key</span>
+          </button>
+          <button class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white">
+            <span class="material-symbols-outlined">help</span>
+          </button>
+          <div class="size-8 rounded-full bg-cover bg-center border border-gray-200 dark:border-gray-700" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBUvewojw4mA5Si2W_cc74u_LgDUc0J2S6DgcCBV_X8KcEZQoNyjY5v9yviHY0aYylZwHn9FQPPL8duFGwLVJkpWV7oMq4P19H2gKvtSYtbPg19pDjHUubQqjpdP8dxAA4Awph1ZVOWfsezykHNsoim0GeFzFOBuq1o1RyQrcogxEWjiQhWRUmDBns_4wLIbIl2_8o4XCLWO0L__T2NcXPgvblNB4kixe17iygvkxgfuMgh4j5t2GIRjY9Zq8Q03rY1YGIoMKB7qP4");'></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+      <div class="lg:col-span-8 space-y-8">
+        <div>
+          <h1 class="text-3xl font-bold tracking-tight text-[#111318] dark:text-white mb-6">Checkout</h1>
+          <nav aria-label="Progress">
+            <ol class="flex items-center" role="list">
+              <li class="relative pr-8 sm:pr-20">
+                <div aria-hidden="true" class="absolute inset-0 flex items-center">
+                  <div class="h-0.5 w-full bg-primary"></div>
+                </div>
+                <a class="relative flex h-8 w-8 items-center justify-center rounded-full bg-primary hover:bg-purple-700 transition-colors" href="#">
+                  <span class="material-symbols-outlined text-white text-sm">check</span>
+                  <span class="sr-only">Step 1: Cart</span>
+                </a>
+                <span class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs font-medium text-primary">Review</span>
+              </li>
+              <li class="relative pr-8 sm:pr-20">
+                <div aria-hidden="true" class="absolute inset-0 flex items-center">
+                  <div class="h-0.5 w-full bg-gray-200 dark:bg-gray-700"></div>
+                  <div class="h-0.5 w-1/2 bg-gradient-to-r from-primary to-accent"></div>
+                </div>
+                <a aria-current="step" class="relative flex h-8 w-8 items-center justify-center rounded-full bg-white dark:bg-[#1a202c] border-2 border-primary" href="#">
+                  <span class="text-xs font-bold text-primary">2</span>
+                  <span class="sr-only">Step 2: Shipping</span>
+                </a>
+                <span class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs font-bold text-[#111318] dark:text-white">Shipping</span>
+              </li>
+              <li class="relative">
+                <div aria-hidden="true" class="absolute inset-0 flex items-center">
+                  <div class="h-0.5 w-full bg-gray-200 dark:bg-gray-700"></div>
+                </div>
+                <a class="group relative flex h-8 w-8 items-center justify-center rounded-full bg-white dark:bg-[#1a202c] border-2 border-gray-300 dark:border-gray-600 hover:border-gray-400" href="#">
+                  <span class="text-xs font-medium text-gray-500 group-hover:text-gray-900 dark:text-gray-400">3</span>
+                  <span class="sr-only">Step 3: Payment</span>
+                </a>
+                <span class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs font-medium text-gray-500 dark:text-gray-400">Payment</span>
+              </li>
+            </ol>
+          </nav>
+        </div>
+
+        <div class="rounded-xl border border-[#f0f2f4] dark:border-[#2d3748] bg-white dark:bg-[#1a202c] overflow-hidden">
+          <div class="p-4 border-b border-[#f0f2f4] dark:border-[#2d3748] flex justify-between items-center bg-gray-50/50 dark:bg-[#202836]">
+            <h3 class="text-base font-semibold text-[#111318] dark:text-white flex items-center gap-2">
+              <span class="material-symbols-outlined text-green-600">check_circle</span>
+              Cart Review
+            </h3>
+            <button class="text-sm font-medium text-primary hover:text-purple-700 transition-colors">Edit</button>
+          </div>
+          <div class="p-4 flex flex-col gap-4">
+            <div class="flex gap-4 justify-between items-center">
+              <div class="flex items-center gap-4">
+                <div class="bg-center bg-no-repeat bg-cover rounded-lg size-12 border border-gray-100 dark:border-gray-700" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBLn0gyjrUA-4JmGNdgc5cqmrf9TZAqI6Kz_uKNLG5nc38qGqn3CsItgo89gtf1kspqZISktsJoAJwoHvEjqasaqR0YLRQAa1xL3G8YHA5z4rNqp-Yr3euXEuwQpd282a9xSO1jaO31BrHVSHpW65ooHoNxJOp_UQyxqmDG1-v_7mKN55b9xgJQDDEbfFpPTTMBNxPynBGrnu1ZsEh2Z46PhQxod0Y-OsPavc-HOKlsR5XCxGACkhuvoEmRCPI4ppfJrzGQDFG1nVA");'></div>
+                <div>
+                  <p class="text-[#111318] dark:text-white text-sm font-medium">Premium Wool Sweater</p>
+                  <p class="text-gray-500 dark:text-gray-400 text-xs">Qty: 1</p>
+                </div>
+              </div>
+              <p class="text-[#111318] dark:text-white text-sm font-medium">$89.00</p>
+            </div>
+            <div class="flex gap-4 justify-between items-center">
+              <div class="flex items-center gap-4">
+                <div class="bg-center bg-no-repeat bg-cover rounded-lg size-12 border border-gray-100 dark:border-gray-700" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCA7xajg8jgbPKPWusmW8WYOOhTn0QlOX2GzbEt2pI5YqWbj-n6jxXSMyAsmHWzNagekpx2xPssSfr9m80UT5WN7KCZYtwYUEAJSDH7C-_zVJSv1FsThHObh4fxxLtVvFG727W00n9RJQ7beNYF8ZC_jAmgZ4-5y70ciLVNjCqWS5wuzeht_fVN6KjDG_89HhMyphC2659lt6f_ZAgVC7MPdLdaMWfL0rv3ZRbc2x6DqxGEMSdKHPl_zF0BESVNExyTO1A09yq1nco");'></div>
+                <div>
+                  <p class="text-[#111318] dark:text-white text-sm font-medium">Artisan Ceramic Mug</p>
+                  <p class="text-gray-500 dark:text-gray-400 text-xs">Qty: 2</p>
+                </div>
+              </div>
+              <p class="text-[#111318] dark:text-white text-sm font-medium">$48.00</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-xl border border-gray-200 dark:border-[#2d3748] bg-white dark:bg-[#1a202c] shadow-sm">
+          <div class="p-6 border-b border-[#f0f2f4] dark:border-[#2d3748]">
+            <h2 class="text-lg font-bold text-[#111318] dark:text-white">Shipping Information</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Where should we send your distinct goods?</p>
+          </div>
+          <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="firstName">First name</label>
+              <input class="block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-[#f0f2f4] dark:bg-[#202836] shadow-sm focus:border-primary focus:ring-primary sm:text-sm px-4 py-2.5 dark:text-white" id="firstName" placeholder="Alice" type="text" />
+            </div>
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="lastName">Last name</label>
+              <input class="block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-[#f0f2f4] dark:bg-[#202836] shadow-sm focus:border-primary focus:ring-primary sm:text-sm px-4 py-2.5 dark:text-white" id="lastName" placeholder="Freeman" type="text" />
+            </div>
+            <div class="md:col-span-2 space-y-2">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="address">Street address</label>
+              <input class="block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-[#f0f2f4] dark:bg-[#202836] shadow-sm focus:border-primary focus:ring-primary sm:text-sm px-4 py-2.5 dark:text-white" id="address" placeholder="123 Fledge Avenue" type="text" />
+            </div>
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="city">City</label>
+              <input class="block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-[#f0f2f4] dark:bg-[#202836] shadow-sm focus:border-primary focus:ring-primary sm:text-sm px-4 py-2.5 dark:text-white" id="city" placeholder="New York" type="text" />
+            </div>
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="state">State / Province</label>
+              <input class="block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-[#f0f2f4] dark:bg-[#202836] shadow-sm focus:border-primary focus:ring-primary sm:text-sm px-4 py-2.5 dark:text-white" id="state" placeholder="NY" type="text" />
+            </div>
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="zip">ZIP / Postal code</label>
+              <input class="block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-[#f0f2f4] dark:bg-[#202836] shadow-sm focus:border-primary focus:ring-primary sm:text-sm px-4 py-2.5 dark:text-white" id="zip" placeholder="10001" type="text" />
+            </div>
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="country">Country</label>
+              <select class="block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-[#f0f2f4] dark:bg-[#202836] shadow-sm focus:border-primary focus:ring-primary sm:text-sm px-4 py-2.5 dark:text-white" id="country">
+                <option>United States</option>
+                <option>Canada</option>
+                <option>United Kingdom</option>
+                <option>Mexico</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-xl border border-gray-200 dark:border-[#2d3748] bg-white dark:bg-[#1a202c] opacity-60 pointer-events-none">
+          <div class="p-6 border-b border-[#f0f2f4] dark:border-[#2d3748]">
+            <h2 class="text-lg font-bold text-[#111318] dark:text-white">Payment Method</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Encrypted and secure.</p>
+          </div>
+          <div class="p-6">
+            <div class="flex gap-4">
+              <div class="flex-1 p-4 border rounded-lg border-primary bg-primary/5 flex items-center justify-center flex-col gap-2">
+                <span class="material-symbols-outlined text-primary">credit_card</span>
+                <span class="text-sm font-bold text-primary">Credit Card</span>
+              </div>
+              <div class="flex-1 p-4 border rounded-lg border-gray-200 dark:border-gray-600 flex items-center justify-center flex-col gap-2">
+                <span class="material-symbols-outlined text-gray-500">account_balance_wallet</span>
+                <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Crypto</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between pt-4">
+          <button class="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white px-4 py-2">
+            <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+            Back to Cart
+          </button>
+          <button id="btn-checkout-pay" class="flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-primary to-accent px-8 py-3 text-sm font-bold text-white shadow-lg shadow-purple-500/30 hover:opacity-90 transition-all">
+            Continue to Payment
+            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="lg:col-span-4">
+        <div class="sticky top-24 space-y-6">
+          <div class="rounded-xl border border-gray-200 dark:border-[#2d3748] bg-white dark:bg-[#1a202c] shadow-sm">
+            <div class="p-6 border-b border-[#f0f2f4] dark:border-[#2d3748]">
+              <h2 class="text-lg font-bold text-[#111318] dark:text-white">Order Summary</h2>
+            </div>
+            <div class="p-6 space-y-4">
+              <div id="cart-items" class="space-y-3"></div>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-500 dark:text-gray-400">Subtotal</span>
+                <span id="summary-subtotal" class="font-medium text-[#111318] dark:text-white">$0.00</span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-500 dark:text-gray-400">Shipping</span>
+                <span id="summary-shipping" class="font-medium text-[#111318] dark:text-white">$0.00</span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-500 dark:text-gray-400">Estimated Taxes</span>
+                <span id="summary-tax" class="font-medium text-[#111318] dark:text-white">$0.00</span>
+              </div>
+              <div class="pt-4 pb-2">
+                <div class="relative flex items-center">
+                  <input class="block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-[#f0f2f4] dark:bg-[#202836] pr-20 text-sm focus:border-primary focus:ring-primary dark:text-white py-2" placeholder="Promo code" type="text" />
+                  <button class="absolute right-1 top-1 bottom-1 px-3 bg-white dark:bg-[#1a202c] text-xs font-bold text-primary rounded border border-gray-200 dark:border-gray-600 hover:bg-gray-50">APPLY</button>
+                </div>
+              </div>
+              <div class="border-t border-[#f0f2f4] dark:border-[#2d3748] pt-4 flex justify-between items-end">
+                <div>
+                  <span class="block text-xs text-gray-500 dark:text-gray-400">Total Due</span>
+                  <span id="order-summary-total" class="text-2xl font-bold text-[#111318] dark:text-white tracking-tight">$0.00</span>
+                </div>
+                <span class="text-xs font-medium text-gray-400 mb-1">USD</span>
+              </div>
+            </div>
+            <div class="bg-gray-50 dark:bg-[#202836] p-4 rounded-b-xl flex justify-center gap-4 border-t border-[#f0f2f4] dark:border-[#2d3748]">
+              <div class="flex items-center gap-1 text-gray-400" title="Secure SSL">
+                <span class="material-symbols-outlined text-[18px]">lock</span>
+                <span class="text-[10px] font-bold uppercase tracking-wider">Secure SSL</span>
+              </div>
+              <div class="flex items-center gap-1 text-gray-400" title="Buyer Protection">
+                <span class="material-symbols-outlined text-[18px]">verified_user</span>
+                <span class="text-[10px] font-bold uppercase tracking-wider">Buyer Protection</span>
+              </div>
+            </div>
+          </div>
+          <div class="text-center">
+            <p class="text-xs text-gray-400 dark:text-gray-500 flex items-center justify-center gap-1">
+              Powered by <span class="font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">The Fledge Base</span>
+              <span class="material-symbols-outlined text-[14px] text-accent">rocket_launch</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { secp256k1 } from "https://esm.sh/ethereum-cryptography/secp256k1";
+    import { keccak256 } from "https://esm.sh/ethereum-cryptography/keccak.js";
+    import { utf8ToBytes, hexToBytes } from "https://esm.sh/ethereum-cryptography/utils.js";
+
+    const HOST = "https://base.thefledge.com";
+    const ENDPOINTS = { addie: `${HOST}/3005` };
+
+    const toast = (message, type = "info") => {
+      const container = document.getElementById("toast-container");
+      if (!container) return;
+      const t = document.createElement("div");
+      t.className = "pointer-events-auto px-4 py-3 rounded-lg text-sm font-semibold shadow-lg border text-white";
+      t.style.background =
+        type === "error" ? "rgba(239,68,68,0.95)" : type === "success" ? "rgba(34,197,94,0.95)" : "rgba(15,23,42,0.95)";
+      t.textContent = message;
+      container.appendChild(t);
+      setTimeout(() => {
+        t.style.opacity = "0";
+        t.style.transform = "translateY(-6px)";
+        setTimeout(() => t.remove(), 200);
+      }, 2600);
+    };
+
+  const sessionless = {
+    async sign(message, privHex) {
+      const msgHash = keccak256(utf8ToBytes(message));
+      return secp256k1.sign(msgHash, hexToBytes(privHex)).toCompactHex();
+    }
+  };
+
+    const loadState = () => {
+      try {
+        const raw = localStorage.getItem("fledge-userflow");
+        if (!raw) return {};
+        const parsed = JSON.parse(raw);
+        const cartRaw = localStorage.getItem("fledge-cart");
+        if (cartRaw) parsed.cart = JSON.parse(cartRaw);
+        return parsed;
+      } catch {
+        return {};
+      }
+    };
+
+    const fetchJSON = async (url, options) => {
+      const res = await fetch(url, options);
+      const text = await res.text();
+      let body = {};
+      try { body = text ? JSON.parse(text) : {}; } catch { body = { raw: text }; }
+      if (!res.ok) {
+        const msg = body?.error || body?.message || res.statusText;
+        throw new Error(`${res.status}: ${msg}`);
+      }
+      return body;
+    };
+
+    const addieCreateUser = async (state) => {
+      const ts = Date.now().toString();
+      const signature = await sessionless.sign(ts + state.keys.pubKey, state.keys.privateKey);
+      const user = await fetchJSON(`${ENDPOINTS.addie}/user/create`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ timestamp: ts, pubKey: state.keys.pubKey, signature })
+      });
+      state.addieUuid = user.uuid || user.userUUID || state.addieUuid;
+      localStorage.setItem("fledge-userflow", JSON.stringify({ ...loadState(), addieUuid: state.addieUuid }));
+      return user;
+    };
+
+    const addieIntent = async (state, amountCents, currency = "USD") => {
+      if (!state.addieUuid) await addieCreateUser(state);
+      const ts = Date.now().toString();
+      const message = ts + state.addieUuid + amountCents + currency;
+      const signature = await sessionless.sign(message, state.keys.privateKey);
+      return await fetchJSON(`${ENDPOINTS.addie}/user/${state.addieUuid}/processor/stripe/intent`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ timestamp: ts, amount: amountCents, currency, payees: [], signature })
+      });
+    };
+
+    const parseTotalCents = () => {
+      const totalEl = document.querySelector("#order-summary-total");
+      const text = totalEl?.textContent || "0";
+      const num = parseFloat(text.replace(/[^0-9.]/g, "")) || 0;
+      return Math.round(num * 100);
+    };
+
+    const renderCart = () => {
+      const cart = loadState().cart || [];
+      const container = document.getElementById("cart-items");
+      const subtotalEl = document.getElementById("summary-subtotal");
+      const shipEl = document.getElementById("summary-shipping");
+      const taxEl = document.getElementById("summary-tax");
+      const totalEl = document.getElementById("order-summary-total");
+      if (!container) return { subtotal: 0 };
+      container.innerHTML = "";
+      if (!cart.length) {
+        container.innerHTML = `<p class="text-sm text-gray-500 dark:text-gray-400">Your cart is empty. Go back and add items.</p>`;
+      } else {
+        cart.forEach((item) => {
+          const row = document.createElement("div");
+          row.className = "flex items-center justify-between text-sm";
+          row.innerHTML = `<div class="flex items-center gap-3">
+            <div class="size-10 rounded-lg bg-gray-100 dark:bg-[#202836] border border-gray-200 dark:border-gray-700" style="background-image:url('${item.photoUrl || ""}'); background-size:cover; background-position:center;"></div>
+            <div class="flex flex-col">
+              <span class="font-semibold text-[#111318] dark:text-white">${item.title || "Item"}</span>
+              <span class="text-xs text-gray-500 dark:text-gray-400">${item.description || ""}</span>
+            </div>
+          </div>
+          <span class="font-medium text-[#111318] dark:text-white">$${(item.price || 0).toFixed(2)}</span>`;
+          container.appendChild(row);
+        });
+      }
+      const subtotal = cart.reduce((sum, i) => sum + (parseFloat(i.price || 0) || 0), 0);
+      const shipping = cart.length ? 12 : 0;
+      const tax = cart.length ? Math.round(subtotal * 0.1 * 100) / 100 : 0;
+      if (subtotalEl) subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
+      if (shipEl) shipEl.textContent = `$${shipping.toFixed(2)}`;
+      if (taxEl) taxEl.textContent = `$${tax.toFixed(2)}`;
+      if (totalEl) totalEl.textContent = `$${(subtotal + shipping + tax).toFixed(2)}`;
+      return { subtotal, shipping, tax };
+    };
+
+    const ensureKeys = () => {
+      const stored = loadState();
+      if (stored?.keys?.privateKey && stored?.keys?.pubKey) return stored;
+      const priv = prompt("Paste your sessionless private key to continue checkout:");
+      if (!priv) throw new Error("Private key required to continue");
+      const privBytes = hexToBytes(priv);
+      const pubKey = bytesToHex(secp256k1.getPublicKey(privBytes));
+      const next = { ...(stored || {}), keys: { privateKey: priv, pubKey } };
+      localStorage.setItem("fledge-userflow", JSON.stringify(next));
+      return next;
+    };
+
+    document.getElementById("btn-checkout-pay")?.addEventListener("click", async () => {
+      try {
+        const stored = ensureKeys();
+        const state = { ...stored, cart: loadState().cart || [] };
+        const totals = renderCart();
+        const amountCents = Math.round((totals.subtotal + totals.shipping + totals.tax) * 100);
+        if (!amountCents) throw new Error("Cart is empty");
+        const res = await addieIntent(state, amountCents, "USD");
+        if (res.checkoutUrl) {
+          toast("Redirecting to Stripe test checkout...", "success");
+          window.location.href = res.checkoutUrl;
+        } else if (res.paymentIntent) {
+          toast(`Intent created: ${res.paymentIntent}`, "success");
+          console.log("Addie intent response", res);
+        } else {
+          toast("Intent created", "success");
+          console.log("Addie intent response", res);
+        }
+      } catch (err) {
+        toast(err.message || "Checkout failed", "error");
+        console.error(err);
+      }
+    });
+
+    // "Log In with Key" header button
+    document.querySelector("#btn-login-key")?.addEventListener("click", () => {
+      try {
+        ensureKeys();
+        toast("Key loaded for checkout", "success");
+      } catch (err) {
+        toast(err.message || "Key load failed", "error");
+      }
+    });
+
+    renderCart();
+  </script>
+  <script src="nav.js"></script>
+</body>
+</html>
+
