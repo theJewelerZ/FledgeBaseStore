@@ -26,3 +26,4 @@
 - Pivoted checkout to hosted Stripe Checkout flow: `checkout.html` now requests `/user/:uuid/processor/stripe/checkout-session`, redirects via returned URL or sessionId/publishable key, and shows success/cancel banners based on query params; retains cart rendering and sessionless key prompts.
 - Added Stripe PaymentIntent fallback to `checkout.html` using Stripe.js card element: mounts card, confirms `payment_intent` when Checkout session endpoint is absent, and shows inline card errors.
 - Added identity upload/reset controls and a display name/email capture on `login.html` so minting no longer fails due to missing profile name.
+- Mint/login now also creates Covenant and Aretha users alongside Continuebee/BDO/Sanora/Addie/Fount to keep all service UUIDs provisioned together.

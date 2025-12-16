@@ -14,7 +14,9 @@ const buildEndpoints = (host) => ({
   sanora: `${host}/7243`,
   addie: `${host}/3005`,
   fount: `${host}/3006`,
-  prof: `${host}/3012`
+  prof: `${host}/3012`,
+  aretha: `${host}/7277`,
+  covenant: `${host}/3011`
 });
 
 const state = {
@@ -363,6 +365,32 @@ const fountCreateUser = async () => {
   return user;
 };
 
+const covenantCreateUser = async () => {
+  ensureKeys();
+  const timestamp = Date.now().toString();
+  const message = timestamp + state.keys.pubKey;
+  const signature = await sessionless.sign(message, state.keys.privateKey);
+  const user = await fetchJSON(`${state.endpoints.covenant}/user/create`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ timestamp, pubKey: state.keys.pubKey, signature })
+  });
+  return user;
+};
+
+const arethaCreateUser = async () => {
+  ensureKeys();
+  const timestamp = Date.now().toString();
+  const message = timestamp + state.keys.pubKey;
+  const signature = await sessionless.sign(message, state.keys.privateKey);
+  const user = await fetchJSON(`${state.endpoints.aretha}/user/create`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ timestamp, pubKey: state.keys.pubKey, signature })
+  });
+  return user;
+};
+
 const sanoraUpsertProduct = async ({ title, description, price, photoUrl, visibility }) => {
   ensureKeys();
   const sanoraUuid = state.sanoraUuid || state.uuid;
@@ -664,6 +692,8 @@ const handleMint = async () => {
       log(`Fount user creation skipped: ${err.message}`);
       return null;
     });
+    await covenantCreateUser().catch((err) => log(`Covenant create skipped: ${err.message}`));
+    await arethaCreateUser().catch((err) => log(`Aretha create skipped: ${err.message}`));
     state.uuid = bdoResp.uuid || cont.userUUID || cont.uuid || "";
     state.sanoraUuid = sanoraUser.uuid || sanoraUser.userUUID || state.uuid;
     state.emojicode = bdoResp.emojiShortcode || state.emojicode;
@@ -716,6 +746,8 @@ const handleLogin = async () => {
       return null;
     });
     state.fountUuid = fountUser?.uuid || fountUser?.userUUID || state.fountUuid;
+    await covenantCreateUser().catch((err) => log(`Covenant create skipped: ${err.message}`));
+    await arethaCreateUser().catch((err) => log(`Aretha create skipped: ${err.message}`));
     await handleProfileLoad();
     await handleStoreLoad();
     await handleLoadMyProducts();
