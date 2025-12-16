@@ -109,30 +109,9 @@
               <span class="material-symbols-outlined text-green-600">check_circle</span>
               Cart Review
             </h3>
-            <button class="text-sm font-medium text-primary hover:text-purple-700 transition-colors">Edit</button>
+            <button class="text-sm font-medium text-primary hover:text-purple-700 transition-colors" onclick="history.back()">Edit</button>
           </div>
-          <div class="p-4 flex flex-col gap-4">
-            <div class="flex gap-4 justify-between items-center">
-              <div class="flex items-center gap-4">
-                <div class="bg-center bg-no-repeat bg-cover rounded-lg size-12 border border-gray-100 dark:border-gray-700" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBLn0gyjrUA-4JmGNdgc5cqmrf9TZAqI6Kz_uKNLG5nc38qGqn3CsItgo89gtf1kspqZISktsJoAJwoHvEjqasaqR0YLRQAa1xL3G8YHA5z4rNqp-Yr3euXEuwQpd282a9xSO1jaO31BrHVSHpW65ooHoNxJOp_UQyxqmDG1-v_7mKN55b9xgJQDDEbfFpPTTMBNxPynBGrnu1ZsEh2Z46PhQxod0Y-OsPavc-HOKlsR5XCxGACkhuvoEmRCPI4ppfJrzGQDFG1nVA");'></div>
-                <div>
-                  <p class="text-[#111318] dark:text-white text-sm font-medium">Premium Wool Sweater</p>
-                  <p class="text-gray-500 dark:text-gray-400 text-xs">Qty: 1</p>
-                </div>
-              </div>
-              <p class="text-[#111318] dark:text-white text-sm font-medium">$89.00</p>
-            </div>
-            <div class="flex gap-4 justify-between items-center">
-              <div class="flex items-center gap-4">
-                <div class="bg-center bg-no-repeat bg-cover rounded-lg size-12 border border-gray-100 dark:border-gray-700" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCA7xajg8jgbPKPWusmW8WYOOhTn0QlOX2GzbEt2pI5YqWbj-n6jxXSMyAsmHWzNagekpx2xPssSfr9m80UT5WN7KCZYtwYUEAJSDH7C-_zVJSv1FsThHObh4fxxLtVvFG727W00n9RJQ7beNYF8ZC_jAmgZ4-5y70ciLVNjCqWS5wuzeht_fVN6KjDG_89HhMyphC2659lt6f_ZAgVC7MPdLdaMWfL0rv3ZRbc2x6DqxGEMSdKHPl_zF0BESVNExyTO1A09yq1nco");'></div>
-                <div>
-                  <p class="text-[#111318] dark:text-white text-sm font-medium">Artisan Ceramic Mug</p>
-                  <p class="text-gray-500 dark:text-gray-400 text-xs">Qty: 2</p>
-                </div>
-              </div>
-              <p class="text-[#111318] dark:text-white text-sm font-medium">$48.00</p>
-            </div>
-          </div>
+          <div id="cart-review" class="p-4 flex flex-col gap-4"></div>
         </div>
 
         <div class="rounded-xl border border-gray-200 dark:border-[#2d3748] bg-white dark:bg-[#1a202c] shadow-sm">
@@ -194,7 +173,7 @@
             Back to Cart
           </button>
           <button id="btn-checkout-pay" class="flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-primary to-accent px-8 py-3 text-sm font-bold text-white shadow-lg shadow-purple-500/30 hover:opacity-90 transition-all">
-            Continue to Payment
+            Pay with Stripe
             <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
           </button>
         </div>
@@ -325,19 +304,6 @@
       return user;
     };
 
-    const addieCheckoutSession = async (state, payload) => {
-      if (!state.addieUuid) await addieCreateUser(state);
-      const ts = Date.now().toString();
-      const totalCents = Math.round((payload.totals?.total || 0) * 100);
-      const message = ts + (state.addieUuid || "") + totalCents;
-      const signature = await sessionless.sign(message, state.keys.privateKey);
-      return await fetchJSON(`${ENDPOINTS.addie}/user/${state.addieUuid || state.uuid}/processor/stripe/checkout-session`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...payload, timestamp: ts, signature })
-      });
-    };
-
     const addieIntentFallback = async (state, payload) => {
       if (!state.addieUuid) await addieCreateUser(state);
       const ts = Date.now().toString();
@@ -361,14 +327,16 @@
     const renderCart = () => {
       const cart = loadState().cart || [];
       const container = document.getElementById("cart-items");
+      const review = document.getElementById("cart-review");
       const subtotalEl = document.getElementById("summary-subtotal");
       const shipEl = document.getElementById("summary-shipping");
       const taxEl = document.getElementById("summary-tax");
       const totalEl = document.getElementById("order-summary-total");
-      if (!container) return { subtotal: 0 };
-      container.innerHTML = "";
+      if (container) container.innerHTML = "";
+      if (review) review.innerHTML = "";
       if (!cart.length) {
-        container.innerHTML = `<p class="text-sm text-gray-500 dark:text-gray-400">Your cart is empty. Go back and add items.</p>`;
+        if (container) container.innerHTML = `<p class="text-sm text-gray-500 dark:text-gray-400">Your cart is empty. Go back and add items.</p>`;
+        if (review) review.innerHTML = `<p class="text-sm text-gray-500 dark:text-gray-400">Your cart is empty. Go back and add items.</p>`;
       } else {
         cart.forEach((item) => {
           const row = document.createElement("div");
@@ -381,7 +349,20 @@
             </div>
           </div>
           <span class="font-medium text-[#111318] dark:text-white">$${(item.price || 0).toFixed(2)}</span>`;
-          container.appendChild(row);
+          if (container) container.appendChild(row.cloneNode(true));
+
+          const reviewRow = document.createElement("div");
+          reviewRow.className = "flex gap-4 justify-between items-center";
+          reviewRow.innerHTML = `
+            <div class="flex items-center gap-4">
+              <div class="bg-center bg-no-repeat bg-cover rounded-lg size-12 border border-gray-100 dark:border-gray-700" style="background-image:url('${item.photoUrl || ""}');"></div>
+              <div>
+                <p class="text-[#111318] dark:text-white text-sm font-medium">${item.title || "Item"}</p>
+                <p class="text-gray-500 dark:text-gray-400 text-xs">Qty: ${item.quantity || 1}</p>
+              </div>
+            </div>
+            <p class="text-[#111318] dark:text-white text-sm font-medium">$${(item.price || 0).toFixed(2)}</p>`;
+          if (review) review.appendChild(reviewRow);
         });
       }
       const subtotal = cart.reduce((sum, i) => sum + (parseFloat(i.price || 0) || 0), 0);
@@ -471,36 +452,9 @@
           cancelUrl: `${window.location.origin}/checkout.html?cancel=1`
         };
 
-        // Try checkout-session endpoint; if missing, fallback to payment-intent.
-        let res;
-        try {
-          res = await addieCheckoutSession(state, payload);
-        } catch (err) {
-          if (err.message?.startsWith("404")) {
-            console.warn("Checkout session endpoint missing; falling back to PaymentIntent flow.");
-            res = await addieIntentFallback(state, payload);
-          } else {
-            throw err;
-          }
-        }
-        const sessionId = res.sessionId || res.id;
-        const url = res.url || res.checkoutUrl;
-        const publishableKey = res.publishableKey || res.pk || res.publicKey;
-
-        if (url) {
-          toast("Redirecting to Stripe Checkout...", "success");
-          window.location.href = url;
-          return;
-        }
-
-        if (publishableKey && sessionId) {
-          const stripe = Stripe(publishableKey);
-          const { error } = await stripe.redirectToCheckout({ sessionId });
-          if (error) throw error;
-          return;
-        }
-
         // PaymentIntent path
+        const res = await addieIntentFallback(state, payload);
+        const publishableKey = res.publishableKey || res.pk || res.publicKey;
         if (res.paymentIntent && publishableKey) {
           stripeInstance = stripeInstance || Stripe(publishableKey);
           mountCard(stripeInstance);
@@ -526,7 +480,7 @@
           return;
         }
 
-        throw new Error("Missing Stripe Checkout session details");
+        throw new Error("Missing Stripe PaymentIntent details");
       } catch (err) {
         toast(err.message || "Checkout failed", "error");
         console.error(err);
