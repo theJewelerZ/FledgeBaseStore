@@ -304,16 +304,28 @@
       return user;
     };
 
-    const addieIntentFallback = async (state, payload) => {
+    const addieIntent = async (state, payload) => {
       if (!state.addieUuid) await addieCreateUser(state);
       const ts = Date.now().toString();
-      const totalCents = Math.round((payload.totals?.total || 0) * 100);
-      const message = ts + (state.addieUuid || "") + totalCents + "USD";
+      const amount = Math.round((payload.totals?.total || 0) * 100);
+      const currency = "USD";
+      const message = ts + (state.uuid || state.addieUuid || "") + amount + currency;
       const signature = await sessionless.sign(message, state.keys.privateKey);
-      return await fetchJSON(`${ENDPOINTS.addie}/user/${state.addieUuid || state.uuid}/processor/stripe/intent`, {
+      return await fetchJSON(`${ENDPOINTS.addie}/user/${state.uuid}/processor/stripe/intent`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ timestamp: ts, amount: totalCents, currency: "USD", payees: [], signature })
+        body: JSON.stringify({
+          timestamp: ts,
+          amount,
+          currency,
+          signature,
+          nonce: state.hash || state.bdo?.nonce || undefined,
+          payees: [],
+          savePaymentMethod: false,
+          productName: payload.cart?.[0]?.title,
+          productId: payload.cart?.[0]?.productId,
+          emojicode: state.emojicode
+        })
       });
     };
 
@@ -452,8 +464,8 @@
           cancelUrl: `${window.location.origin}/checkout.html?cancel=1`
         };
 
-        // PaymentIntent path
-        const res = await addieIntentFallback(state, payload);
+        // PaymentIntent path (backend supports PI endpoint)
+        const res = await addieIntent(state, payload);
         const publishableKey = res.publishableKey || res.pk || res.publicKey;
         if (res.paymentIntent && publishableKey) {
           stripeInstance = stripeInstance || Stripe(publishableKey);
