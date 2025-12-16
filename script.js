@@ -30,6 +30,8 @@ const state = {
   sanoraUuid: "",
   addieUuid: "",
   fountUuid: "",
+  covenantUuid: "",
+  arethaUuid: "",
   profile: {},
   store: {},
   bdo: {},
@@ -163,6 +165,8 @@ const saveState = () => {
         sanoraUuid: state.sanoraUuid,
         addieUuid: state.addieUuid,
         fountUuid: state.fountUuid,
+        covenantUuid: state.covenantUuid,
+        arethaUuid: state.arethaUuid,
         profile: state.profile,
         store: state.store
       })
@@ -187,6 +191,8 @@ const restoreState = () => {
     state.sanoraUuid = parsed.sanoraUuid || "";
     state.addieUuid = parsed.addieUuid || "";
     state.fountUuid = parsed.fountUuid || "";
+    state.covenantUuid = parsed.covenantUuid || "";
+    state.arethaUuid = parsed.arethaUuid || "";
     state.profile = parsed.profile || {};
     state.store = parsed.store || {};
 
@@ -375,6 +381,8 @@ const covenantCreateUser = async () => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ timestamp, pubKey: state.keys.pubKey, signature })
   });
+  state.covenantUuid = user.uuid || user.userUUID || state.covenantUuid;
+  saveState();
   return user;
 };
 
@@ -388,6 +396,8 @@ const arethaCreateUser = async () => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ timestamp, pubKey: state.keys.pubKey, signature })
   });
+  state.arethaUuid = user.uuid || user.userUUID || state.arethaUuid;
+  saveState();
   return user;
 };
 
@@ -692,17 +702,37 @@ const handleMint = async () => {
       log(`Fount user creation skipped: ${err.message}`);
       return null;
     });
-    await covenantCreateUser().catch((err) => log(`Covenant create skipped: ${err.message}`));
-    await arethaCreateUser().catch((err) => log(`Aretha create skipped: ${err.message}`));
+    const covenantUser = await covenantCreateUser().catch((err) => {
+      log(`Covenant create skipped: ${err.message}`);
+      return null;
+    });
+    const arethaUser = await arethaCreateUser().catch((err) => {
+      log(`Aretha create skipped: ${err.message}`);
+      return null;
+    });
     state.uuid = bdoResp.uuid || cont.userUUID || cont.uuid || "";
     state.sanoraUuid = sanoraUser.uuid || sanoraUser.userUUID || state.uuid;
     state.emojicode = bdoResp.emojiShortcode || state.emojicode;
     state.addieUuid = addieUser?.uuid || addieUser?.userUUID || state.addieUuid;
     state.fountUuid = fountUser?.uuid || fountUser?.userUUID || state.fountUuid;
+    state.covenantUuid = covenantUser?.uuid || covenantUser?.userUUID || state.covenantUuid;
+    state.arethaUuid = arethaUser?.uuid || arethaUser?.userUUID || state.arethaUuid;
     setInput("login-uuid", state.uuid);
 
     // Save full profile+store to BDO in one shot
-    const combinedBdo = { profile, store };
+    const combinedBdo = {
+      profile,
+      store,
+      ids: {
+        uuid: state.uuid,
+        sanoraUuid: state.sanoraUuid,
+        addieUuid: state.addieUuid,
+        fountUuid: state.fountUuid,
+        covenantUuid: state.covenantUuid,
+        arethaUuid: state.arethaUuid,
+        emojicode: state.emojicode
+      }
+    };
     const updated = await bdoUpdate(state.uuid, state.hash, combinedBdo);
     state.bdo = updated.bdo || combinedBdo;
     state.profile = state.bdo.profile || profile;
@@ -746,8 +776,16 @@ const handleLogin = async () => {
       return null;
     });
     state.fountUuid = fountUser?.uuid || fountUser?.userUUID || state.fountUuid;
-    await covenantCreateUser().catch((err) => log(`Covenant create skipped: ${err.message}`));
-    await arethaCreateUser().catch((err) => log(`Aretha create skipped: ${err.message}`));
+    const covenantUser = await covenantCreateUser().catch((err) => {
+      log(`Covenant create skipped: ${err.message}`);
+      return null;
+    });
+    const arethaUser = await arethaCreateUser().catch((err) => {
+      log(`Aretha create skipped: ${err.message}`);
+      return null;
+    });
+    state.covenantUuid = covenantUser?.uuid || covenantUser?.userUUID || state.covenantUuid;
+    state.arethaUuid = arethaUser?.uuid || arethaUser?.userUUID || state.arethaUuid;
     await handleProfileLoad();
     await handleStoreLoad();
     await handleLoadMyProducts();
@@ -810,7 +848,19 @@ const handleProfileSave = async () => {
       showToast("Enter a valid email", "error");
       throw new Error("Email invalid");
     }
-    const next = { ...base, profile: nextProfile };
+    const next = {
+      ...base,
+      profile: nextProfile,
+      ids: {
+        uuid: state.uuid,
+        sanoraUuid: state.sanoraUuid,
+        addieUuid: state.addieUuid,
+        fountUuid: state.fountUuid,
+        covenantUuid: state.covenantUuid,
+        arethaUuid: state.arethaUuid,
+        emojicode: state.emojicode
+      }
+    };
     const resp = await bdoUpdate(state.uuid, state.hash, next);
     state.bdo = resp.bdo || next;
     state.profile = state.bdo.profile || {};
@@ -839,7 +889,20 @@ const handleStoreSave = async () => {
       showToast("Store name required", "error");
       throw new Error("Store name required");
     }
-    const next = { ...base, store };
+    const next = {
+      ...base,
+      store,
+      ids: {
+        ...(base.ids || {}),
+        uuid: state.uuid,
+        sanoraUuid: state.sanoraUuid,
+        addieUuid: state.addieUuid,
+        fountUuid: state.fountUuid,
+        covenantUuid: state.covenantUuid,
+        arethaUuid: state.arethaUuid,
+        emojicode: state.emojicode
+      }
+    };
     const resp = await bdoUpdate(state.uuid, state.hash, next);
     state.bdo = resp.bdo || next;
     state.store = state.bdo.store || store;
