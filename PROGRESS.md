@@ -25,3 +25,4 @@
 - Added dedicated `product-manager.html` + `product-manager.js`: a streamlined product management page (no legacy console), wired to Sanora/BDO for identity restore, store link copy, product listing/stats, and quick add; removed console from nav and linked new manager instead.
 - Pivoted checkout to hosted Stripe Checkout flow: `checkout.html` now requests `/user/:uuid/processor/stripe/checkout-session`, redirects via returned URL or sessionId/publishable key, and shows success/cancel banners based on query params; retains cart rendering and sessionless key prompts.
 - Added Stripe PaymentIntent fallback to `checkout.html` using Stripe.js card element: mounts card, confirms `payment_intent` when Checkout session endpoint is absent, and shows inline card errors.
+- Added identity upload/reset controls and a display name/email capture on `login.html` so minting no longer fails due to missing profile name.

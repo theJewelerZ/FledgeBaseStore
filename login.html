@@ -140,6 +140,16 @@
               <input id="login-priv" class="w-full bg-card-dark border border-white/10 rounded-lg px-4 py-2 text-sm text-white placeholder-slate-500" placeholder="Private key" />
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="flex flex-col gap-1">
+                <label class="text-xs text-slate-400">Display Name (required)</label>
+                <input id="profile-name" class="w-full bg-card-dark border border-white/10 rounded-lg px-4 py-2 text-sm text-white placeholder-slate-500" placeholder="Your name" />
+              </div>
+              <div class="flex flex-col gap-1">
+                <label class="text-xs text-slate-400">Email (optional)</label>
+                <input id="profile-email" class="w-full bg-card-dark border border-white/10 rounded-lg px-4 py-2 text-sm text-white placeholder-slate-500" placeholder="you@example.com" />
+              </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <button id="btn-login" class="w-full h-11 bg-primary/80 hover:bg-primary text-white font-semibold rounded-lg flex items-center justify-center gap-2">
                 <span class="material-symbols-outlined text-lg">login</span>
                 <span>Login with Saved</span>
