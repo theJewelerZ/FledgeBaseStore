@@ -150,6 +150,17 @@
               </button>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <label class="w-full h-11 bg-transparent hover:bg-white/5 border border-white/10 text-gray-300 hover:text-white font-medium rounded-lg transition-all flex items-center justify-center gap-2 text-sm cursor-pointer">
+                <span class="material-symbols-outlined text-lg">upload</span>
+                <span>Upload Identity</span>
+                <input id="btn-import-id" type="file" accept="application/json" hidden />
+              </label>
+              <button id="btn-reset-identity" type="button" class="w-full h-11 bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white font-medium rounded-lg transition-all flex items-center justify-center gap-2 text-sm">
+                <span class="material-symbols-outlined text-lg">restart_alt</span>
+                <span>Clear Local Identity</span>
+              </button>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div class="flex items-center justify-center gap-2 text-xs text-slate-400 bg-white/5 rounded-lg px-3 py-2 border border-white/10">
                 <span class="text-slate-500">UUID:</span>
                 <span id="session-uuid" class="font-mono text-white truncate">-</span>
@@ -216,6 +227,20 @@
     </div>
   </main>
   <script type="module" src="script.js"></script>
-<script src="nav.js"></script></body>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const resetBtn = document.getElementById("btn-reset-identity");
+      if (resetBtn) {
+        resetBtn.addEventListener("click", () => {
+          localStorage.removeItem("fledge-userflow");
+          localStorage.removeItem("fledge-cart");
+          alert("Local identity and cart cleared. Refreshing page.");
+          window.location.reload();
+        });
+      }
+    });
+  </script>
+  <script src="nav.js"></script>
+</body>
 </html>
 
