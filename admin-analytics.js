@@ -239,6 +239,32 @@ const renderMiniStores = (products) => {
   });
 };
 
+const renderInventory = (products) => {
+  const body = document.getElementById("global-inventory-body");
+  if (!body) return;
+  body.innerHTML = "";
+  if (!products.length) {
+    body.innerHTML = `<tr><td class="p-4 text-slate-500" colspan="4">No inventory.</td></tr>`;
+    return;
+  }
+  products.slice(0, 50).forEach((p) => {
+    const tr = document.createElement("tr");
+    tr.className = "group hover:bg-white/5 transition-colors border-b border-white/5 last:border-0";
+    const vis = p.visibility || (p.isPublic ? "global" : "store");
+    tr.innerHTML = `
+      <td class="px-4 py-3 text-white">${p.title || "(untitled)"}</td>
+      <td class="px-4 py-3 hidden sm:table-cell font-mono text-slate-400 text-xs">${p.storeId || "global"}</td>
+      <td class="px-4 py-3">
+        <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
+          vis === "global" ? "bg-emerald-400/10 text-emerald-300" : "bg-slate-500/10 text-slate-200"
+        }">${vis === "global" ? "Global" : "Store"}</span>
+      </td>
+      <td class="px-4 py-3 text-right text-white font-semibold">$${(parseFloat(p.price || 0) || 0).toFixed(2)}</td>
+    `;
+    body.appendChild(tr);
+  });
+};
+
 const aggregateStores = (products) => {
   const grouped = products.reduce((acc, p) => {
     const id = p.storeId || "global";
@@ -453,6 +479,7 @@ const refreshAnalytics = async () => {
     renderBars(products);
     renderTopStores(products);
     renderMiniStores(products);
+    renderInventory(products);
     renderFeed(feed);
     renderServiceHealth(services);
   } catch (err) {

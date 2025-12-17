@@ -279,6 +279,28 @@
 
           <div class="rounded-xl bg-card-dark border border-white/5 p-6">
             <div class="flex items-center justify-between mb-4">
+              <h3 class="font-bold text-white">Global Inventory</h3>
+              <span class="text-xs text-slate-400">All products (Sanora base feed)</span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="text-xs text-slate-500 border-b border-white/5 uppercase tracking-wider">
+                    <th class="px-4 py-2 font-semibold">Product</th>
+                    <th class="px-4 py-2 font-semibold hidden sm:table-cell">Store</th>
+                    <th class="px-4 py-2 font-semibold">Visibility</th>
+                    <th class="px-4 py-2 font-semibold text-right">Price</th>
+                  </tr>
+                </thead>
+                <tbody id="global-inventory-body" class="text-sm">
+                  <tr><td class="p-4 text-slate-500" colspan="4">Loading inventory...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="rounded-xl bg-card-dark border border-white/5 p-6">
+            <div class="flex items-center justify-between mb-4">
               <div>
                 <h2 class="text-lg font-bold text-white">Revenue Ecosystem</h2>
                 <p class="text-sm text-slate-400">Live bars from Sanora product prices</p>
