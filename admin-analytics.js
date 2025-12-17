@@ -393,17 +393,18 @@ const ensureFountUser = async () => {
 
 const refreshAnalytics = async () => {
   try {
-    const [products, feed, sanoraStatus, covenantStatus, doloresStatus] = await Promise.all([
+    const [products, feed, sanoraStatus, doloresStatus] = await Promise.all([
       fetchGlobalProducts().catch((err) => {
         console.warn("Products", err);
         return [];
       }),
       fetchFeed(),
       checkService("Sanora", `${state.endpoints.sanora}/products/base`),
-      checkService("Covenant", `${state.endpoints.covenant}/health`),
       checkService("Dolores", `${state.endpoints.dolores}/canimus/feeds`)
     ]);
 
+    // Covenant health endpoint is blocked by CORS from Vercel; mark as unknown without calling it.
+    const covenantStatus = { name: "Covenant", status: "unknown", detail: "Health check disabled (CORS)" };
     const services = [sanoraStatus, covenantStatus, doloresStatus];
     renderKPIs(products);
     renderBars(products);
