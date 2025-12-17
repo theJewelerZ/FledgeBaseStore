@@ -265,6 +265,37 @@ const renderInventory = (products) => {
   });
 };
 
+const renderUsers = (products) => {
+  const body = document.getElementById("users-body");
+  if (!body) return;
+  body.innerHTML = "";
+  if (!products.length) {
+    body.innerHTML = `<tr><td class="p-4 text-slate-500" colspan="3">No users found.</td></tr>`;
+    return;
+  }
+  const rows = aggregateStores(products)
+    .sort((a, b) => b.volume - a.volume)
+    .slice(0, 20);
+  rows.forEach((row) => {
+    const tr = document.createElement("tr");
+    tr.className = "group hover:bg-white/5 transition-colors border-b border-white/5 last:border-0";
+    tr.innerHTML = `
+      <td class="px-4 py-3 flex items-center gap-2">
+        <div class="size-8 rounded bg-gradient-to-br from-primary to-accent-orange flex items-center justify-center text-white font-bold text-xs">${row.id
+          .slice(0, 2)
+          .toUpperCase()}</div>
+        <div class="flex flex-col">
+          <span class="text-white text-sm font-semibold">${row.id}</span>
+          <span class="text-xs text-slate-400">${row.products} products</span>
+        </div>
+      </td>
+      <td class="px-4 py-3 text-slate-300">${row.products}</td>
+      <td class="px-4 py-3 text-right text-white font-semibold">$${row.volume.toFixed(2)}</td>
+    `;
+    body.appendChild(tr);
+  });
+};
+
 const aggregateStores = (products) => {
   const grouped = products.reduce((acc, p) => {
     const id = p.storeId || "global";
@@ -480,6 +511,7 @@ const refreshAnalytics = async () => {
     renderTopStores(products);
     renderMiniStores(products);
     renderInventory(products);
+    renderUsers(products);
     renderFeed(feed);
     renderServiceHealth(services);
   } catch (err) {
