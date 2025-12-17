@@ -296,6 +296,27 @@ const renderUsers = (products) => {
   });
 };
 
+const renderSecurity = () => {
+  setText("sec-uuid", state.uuid || "-");
+  setText("sec-pubkey", state.keys?.pubKey || "-");
+  setText("sec-privkey", state.keys?.privateKey ? "Loaded locally" : "-");
+  const { hasGalactic, hasAdmin } = computePermissions(state.nineum);
+  const badge = document.getElementById("sec-nuneum-badge");
+  const status = hasGalactic ? "Galactic" : hasAdmin ? "Admin" : "Limited";
+  if (badge) {
+    badge.textContent = status;
+    badge.className = `inline-flex items-center px-2 py-1 rounded text-[11px] ${
+      hasGalactic
+        ? "bg-emerald-500/20 text-emerald-200"
+        : hasAdmin
+        ? "bg-blue-500/20 text-blue-200"
+        : "bg-slate-700 text-slate-200"
+    }`;
+  }
+  setText("sec-nuneum-status", `Nineum: ${status}`);
+  setText("sec-fount-user", `Fount user: ${state.fountUuid || "unknown"}`);
+};
+
 const aggregateStores = (products) => {
   const grouped = products.reduce((acc, p) => {
     const id = p.storeId || "global";
@@ -514,6 +535,7 @@ const refreshAnalytics = async () => {
     renderUsers(products);
     renderFeed(feed);
     renderServiceHealth(services);
+    renderSecurity();
   } catch (err) {
     console.error("Analytics refresh failed", err);
   }
@@ -522,6 +544,7 @@ const refreshAnalytics = async () => {
 document.addEventListener("DOMContentLoaded", () => {
   loadStoredState();
   renderNineum();
+  renderSecurity();
   refreshAnalytics();
   document.getElementById("btn-refresh-nineum")?.addEventListener("click", refreshNineum);
   document.getElementById("btn-claim-galactic")?.addEventListener("click", claimGalactic);
