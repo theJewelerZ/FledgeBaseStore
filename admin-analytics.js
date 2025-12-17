@@ -18,33 +18,76 @@ const buildEndpoints = (host) => ({
 });
 
 const state = {
+  env: "prod",
   host: ENVIRONMENTS.prod.host,
   endpoints: buildEndpoints(ENVIRONMENTS.prod.host),
   store: {},
   profile: {},
   uuid: "",
   sanoraUuid: "",
+  addieUuid: "",
+  hash: "",
+  emojicode: "",
+  covenantUuid: "",
+  arethaUuid: "",
   keys: null,
   fountUuid: "",
   nineum: []
 };
 
-const loadStoredState = () => {
+const getStoredUserflow = () => {
   try {
     const raw = localStorage.getItem("fledge-userflow");
-    if (!raw) return;
-    const parsed = JSON.parse(raw);
-    state.host = parsed.host || state.host;
-    state.endpoints = buildEndpoints(state.host);
-    state.store = parsed.store || {};
-    state.profile = parsed.profile || {};
-    state.uuid = parsed.uuid || "";
-    state.sanoraUuid = parsed.sanoraUuid || "";
-    state.keys = parsed.keys || null;
-    state.fountUuid = parsed.fountUuid || "";
+    return raw ? JSON.parse(raw) : {};
   } catch (err) {
-    console.warn("Failed to load stored state", err);
+    console.warn("Failed to parse stored state", err);
+    return {};
   }
+};
+
+const persistUserflow = (patch = {}) => {
+  const existing = getStoredUserflow();
+  const merged = {
+    ...existing,
+    env: state.env,
+    host: state.host,
+    keys: state.keys,
+    uuid: state.uuid,
+    hash: state.hash,
+    emojicode: state.emojicode,
+    sanoraUuid: state.sanoraUuid,
+    addieUuid: state.addieUuid,
+    fountUuid: state.fountUuid,
+    covenantUuid: state.covenantUuid,
+    arethaUuid: state.arethaUuid,
+    profile: state.profile,
+    store: state.store,
+    ...patch
+  };
+  try {
+    localStorage.setItem("fledge-userflow", JSON.stringify(merged));
+  } catch (err) {
+    console.warn("Persist failed", err);
+  }
+};
+
+const loadStoredState = () => {
+  const parsed = getStoredUserflow();
+  if (!parsed) return;
+  state.env = parsed.env || state.env;
+  state.host = parsed.host || state.host;
+  state.endpoints = buildEndpoints(state.host);
+  state.store = parsed.store || {};
+  state.profile = parsed.profile || {};
+  state.uuid = parsed.uuid || "";
+  state.sanoraUuid = parsed.sanoraUuid || "";
+  state.addieUuid = parsed.addieUuid || "";
+  state.hash = parsed.hash || "";
+  state.emojicode = parsed.emojicode || "";
+  state.covenantUuid = parsed.covenantUuid || "";
+  state.arethaUuid = parsed.arethaUuid || "";
+  state.keys = parsed.keys || null;
+  state.fountUuid = parsed.fountUuid || "";
 };
 
 const fetchJSON = async (url, options) => {
@@ -72,6 +115,11 @@ const sign = async (message, privHex) => {
 const setText = (id, value) => {
   const el = document.getElementById(id);
   if (el) el.textContent = value ?? "";
+};
+
+const setValue = (id, value) => {
+  const el = document.getElementById(id);
+  if (el) el.value = value ?? "";
 };
 
 const normalizeSanoraProducts = (data) => {
@@ -391,6 +439,66 @@ const renderServiceHealth = (services) => {
   });
 };
 
+// Settings helpers
+const renderSettingsPanel = () => {
+  setText("settings-current-host", state.host || "-");
+  setText("settings-current-env", state.env?.toUpperCase?.() || "PROD");
+  setValue("settings-host", state.host || "");
+  const envSelect = document.getElementById("settings-env");
+  if (envSelect) envSelect.value = state.env || "prod";
+  setText("settings-uuid", state.uuid || "Not set");
+  setText("settings-pubkey", state.keys?.pubKey || "Not loaded");
+};
+
+const exportIdentity = () => {
+  if (!state.uuid || !state.keys) {
+    alert("Mint or login first to export identity.");
+    return;
+  }
+  const bundle = {
+    uuid: state.uuid,
+    hash: state.hash,
+    sanoraUuid: state.sanoraUuid,
+    addieUuid: state.addieUuid,
+    keys: state.keys
+  };
+  const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "fledge-identity.json";
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
+const importIdentity = (file) => {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      state.uuid = data.uuid || state.uuid;
+      state.hash = data.hash || state.hash;
+      state.sanoraUuid = data.sanoraUuid || state.sanoraUuid;
+      state.addieUuid = data.addieUuid || state.addieUuid;
+      state.keys = data.keys || state.keys;
+      persistUserflow();
+      renderSecurity();
+      renderNineum();
+      renderSettingsPanel();
+      refreshAnalytics();
+    } catch (err) {
+      alert(`Import failed: ${err.message}`);
+    }
+  };
+  reader.readAsText(file);
+};
+
+const clearIdentity = () => {
+  localStorage.removeItem("fledge-userflow");
+  alert("Local identity cleared. Reloading.");
+  window.location.reload();
+};
+
 // Nineum helpers
 const renderNineum = () => {
   setText("nineum-uuid", state.uuid || "-");
@@ -541,12 +649,54 @@ const refreshAnalytics = async () => {
   }
 };
 
+const handleHostSave = (e) => {
+  e?.preventDefault?.();
+  const envSelect = document.getElementById("settings-env");
+  const env = envSelect?.value || state.env || "prod";
+  let nextHost = "";
+  if (env !== "custom") {
+    nextHost = ENVIRONMENTS[env]?.host || state.host;
+  } else {
+    nextHost = document.getElementById("settings-host")?.value?.trim() || state.host;
+  }
+  if (!nextHost) {
+    alert("Enter a host URL.");
+    return;
+  }
+  state.env = env;
+  state.host = nextHost;
+  state.endpoints = buildEndpoints(nextHost);
+  persistUserflow();
+  renderSettingsPanel();
+  refreshAnalytics();
+};
+
+const handleResetHost = (e) => {
+  e?.preventDefault?.();
+  state.env = "prod";
+  state.host = ENVIRONMENTS.prod.host;
+  state.endpoints = buildEndpoints(state.host);
+  persistUserflow({ env: state.env, host: state.host });
+  renderSettingsPanel();
+  refreshAnalytics();
+};
+
 document.addEventListener("DOMContentLoaded", () => {
   loadStoredState();
   renderNineum();
   renderSecurity();
+  renderSettingsPanel();
   refreshAnalytics();
   document.getElementById("btn-refresh-nineum")?.addEventListener("click", refreshNineum);
   document.getElementById("btn-claim-galactic")?.addEventListener("click", claimGalactic);
   document.getElementById("btn-grant-admin")?.addEventListener("click", grantAdminNineum);
+  document.getElementById("settings-host-form")?.addEventListener("submit", handleHostSave);
+  document.getElementById("settings-reset-host")?.addEventListener("click", handleResetHost);
+  document.getElementById("settings-export")?.addEventListener("click", exportIdentity);
+  document.getElementById("settings-clear")?.addEventListener("click", clearIdentity);
+  document.getElementById("settings-refresh-health")?.addEventListener("click", refreshAnalytics);
+  document.getElementById("settings-upload")?.addEventListener("change", (e) => {
+    const file = e.target?.files?.[0];
+    if (file) importIdentity(file);
+  });
 });

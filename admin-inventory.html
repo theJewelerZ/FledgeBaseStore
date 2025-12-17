@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Fledge Base - Global Inventory</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" />
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#7f13ec",
+            "accent-orange": "#fa6f38",
+            "background-light": "#f7f6f8",
+            "background-dark": "#191022",
+            "card-dark": "#231a2e"
+          },
+          fontFamily: { display: ["Inter", "sans-serif"] },
+          borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", "2xl": "1rem", full: "9999px" }
+        }
+      }
+    };
+  </script>
+  <style>
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #191022; }
+    ::-webkit-scrollbar-thumb { background: #3a2e48; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #7f13ec; }
+  </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display antialiased overflow-hidden">
+  <div class="flex h-screen w-full">
+    <aside class="hidden w-64 flex-col border-r border-white/5 bg-[#141118] lg:flex">
+      <div class="flex h-16 items-center gap-3 px-6 border-b border-white/5">
+        <div class="size-8 rounded-lg bg-gradient-to-br from-primary to-accent-orange flex items-center justify-center">
+          <span class="material-symbols-outlined text-white text-xl">dataset</span>
+        </div>
+        <span class="text-lg font-bold tracking-tight text-white">The Fledge Base</span>
+      </div>
+      <div class="flex flex-1 flex-col justify-between p-4">
+        <nav class="flex flex-col gap-2">
+          <p class="px-2 text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Platform</p>
+          <a class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-white/5 hover:text-white transition-colors" href="admin-analytics.html">
+            <span class="material-symbols-outlined text-primary-light">analytics</span>
+            <span class="font-medium">Analytics</span>
+          </a>
+          <a class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-white/5 hover:text-white transition-colors" href="admin-mini-store.html">
+            <span class="material-symbols-outlined">storefront</span>
+            <span class="font-medium">Mini-Stores</span>
+          </a>
+          <a class="flex items-center gap-3 rounded-lg bg-primary/20 px-3 py-2.5 text-white transition-colors" href="admin-inventory.html">
+            <span class="material-symbols-outlined">inventory_2</span>
+            <span class="font-medium">Global Inventory</span>
+          </a>
+          <a class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-white/5 hover:text-white transition-colors" href="admin-users.html">
+            <span class="material-symbols-outlined">group</span>
+            <span class="font-medium">Users</span>
+          </a>
+          <p class="px-2 text-xs font-semibold uppercase tracking-wider text-slate-500 mt-4 mb-2">System</p>
+          <a class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-white/5 hover:text-white transition-colors" href="admin-security.html">
+            <span class="material-symbols-outlined">encrypted</span>
+            <span class="font-medium">Security &amp; Keys</span>
+          </a>
+          <a class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-white/5 hover:text-white transition-colors" href="admin-settings.html">
+            <span class="material-symbols-outlined">settings</span>
+            <span class="font-medium">Settings</span>
+          </a>
+        </nav>
+        <div class="rounded-xl bg-gradient-to-br from-card-dark to-[#1f1625] p-4 border border-white/5">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="material-symbols-outlined text-accent-orange text-sm">bolt</span>
+            <span class="text-xs font-semibold text-white">System Status</span>
+          </div>
+          <div class="w-full bg-slate-800 rounded-full h-1.5 mb-2">
+            <div class="bg-accent-orange h-1.5 rounded-full w-[92%]"></div>
+          </div>
+          <div class="flex justify-between text-[10px] text-slate-400">
+            <span>Nodes Online</span>
+            <span class="text-white">92%</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="flex h-full flex-1 flex-col overflow-hidden">
+      <header class="flex h-16 items-center justify-between border-b border-white/5 bg-[#141118]/80 backdrop-blur-md px-8 z-10">
+        <div class="flex items-center gap-4 text-white">
+          <div class="flex items-center gap-2 text-sm text-slate-400">
+            <span>Mission Control</span>
+            <span class="material-symbols-outlined text-xs">chevron_right</span>
+            <span class="text-white font-medium">Global Inventory</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="flex-1 overflow-y-auto p-4 lg:p-8">
+        <div class="mx-auto max-w-7xl flex flex-col gap-6">
+          <div class="rounded-xl bg-card-dark border border-white/5 p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-bold text-white">Global Inventory</h3>
+              <span class="text-xs text-slate-400">All products (Sanora base feed)</span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="text-xs text-slate-500 border-b border-white/5 uppercase tracking-wider">
+                    <th class="px-4 py-2 font-semibold">Product</th>
+                    <th class="px-4 py-2 font-semibold hidden sm:table-cell">Store</th>
+                    <th class="px-4 py-2 font-semibold">Visibility</th>
+                    <th class="px-4 py-2 font-semibold text-right">Price</th>
+                  </tr>
+                </thead>
+                <tbody id="global-inventory-body" class="text-sm">
+                  <tr><td class="p-4 text-slate-500" colspan="4">Loading inventory...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+<script type="module" src="admin-analytics.js"></script><script src="nav.js"></script></body>
+</html>

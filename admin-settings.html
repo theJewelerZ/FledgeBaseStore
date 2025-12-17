@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Fledge Base - Settings</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" />
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#7f13ec",
+            "accent-orange": "#fa6f38",
+            "background-light": "#f7f6f8",
+            "background-dark": "#191022",
+            "card-dark": "#231a2e"
+          },
+          fontFamily: { display: ["Inter", "sans-serif"] },
+          borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", "2xl": "1rem", full: "9999px" }
+        }
+      }
+    };
+  </script>
+  <style>
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #191022; }
+    ::-webkit-scrollbar-thumb { background: #3a2e48; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #7f13ec; }
+  </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display antialiased overflow-hidden">
+  <div class="flex h-screen w-full">
+    <aside class="hidden w-64 flex-col border-r border-white/5 bg-[#141118] lg:flex">
+      <div class="flex h-16 items-center gap-3 px-6 border-b border-white/5">
+        <div class="size-8 rounded-lg bg-gradient-to-br from-primary to-accent-orange flex items-center justify-center">
+          <span class="material-symbols-outlined text-white text-xl">dataset</span>
+        </div>
+        <span class="text-lg font-bold tracking-tight text-white">The Fledge Base</span>
+      </div>
+      <div class="flex flex-1 flex-col justify-between p-4">
+        <nav class="flex flex-col gap-2">
+          <p class="px-2 text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Platform</p>
+          <a class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-white/5 hover:text-white transition-colors" href="admin-analytics.html">
+            <span class="material-symbols-outlined text-primary-light">analytics</span>
+            <span class="font-medium">Analytics</span>
+          </a>
+          <a class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-white/5 hover:text-white transition-colors" href="admin-mini-store.html">
+            <span class="material-symbols-outlined">storefront</span>
+            <span class="font-medium">Mini-Stores</span>
+          </a>
+          <a class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-white/5 hover:text-white transition-colors" href="admin-inventory.html">
+            <span class="material-symbols-outlined">inventory_2</span>
+            <span class="font-medium">Global Inventory</span>
+          </a>
+          <a class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-white/5 hover:text-white transition-colors" href="admin-users.html">
+            <span class="material-symbols-outlined">group</span>
+            <span class="font-medium">Users</span>
+          </a>
+          <p class="px-2 text-xs font-semibold uppercase tracking-wider text-slate-500 mt-4 mb-2">System</p>
+          <a class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-white/5 hover:text-white transition-colors" href="admin-security.html">
+            <span class="material-symbols-outlined">encrypted</span>
+            <span class="font-medium">Security &amp; Keys</span>
+          </a>
+          <a class="flex items-center gap-3 rounded-lg bg-primary/20 px-3 py-2.5 text-white transition-colors" href="admin-settings.html">
+            <span class="material-symbols-outlined">settings</span>
+            <span class="font-medium">Settings</span>
+          </a>
+        </nav>
+        <div class="rounded-xl bg-gradient-to-br from-card-dark to-[#1f1625] p-4 border border-white/5">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="material-symbols-outlined text-accent-orange text-sm">bolt</span>
+            <span class="text-xs font-semibold text-white">System Status</span>
+          </div>
+          <div class="w-full bg-slate-800 rounded-full h-1.5 mb-2">
+            <div class="bg-accent-orange h-1.5 rounded-full w-[92%]"></div>
+          </div>
+          <div class="flex justify-between text-[10px] text-slate-400">
+            <span>Nodes Online</span>
+            <span class="text-white">92%</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="flex h-full flex-1 flex-col overflow-hidden">
+      <header class="flex h-16 items-center justify-between border-b border-white/5 bg-[#141118]/80 backdrop-blur-md px-8 z-10">
+        <div class="flex items-center gap-4 text-white">
+          <div class="flex items-center gap-2 text-sm text-slate-400">
+            <span>Mission Control</span>
+            <span class="material-symbols-outlined text-xs">chevron_right</span>
+            <span class="text-white font-medium">Settings</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="flex-1 overflow-y-auto p-4 lg:p-8">
+        <div class="mx-auto max-w-7xl flex flex-col gap-6">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="rounded-xl bg-card-dark border border-white/5 p-6">
+              <div class="flex items-center justify-between mb-4">
+                <div>
+                  <h3 class="font-bold text-white">API Host &amp; Environment</h3>
+                  <p class="text-xs text-slate-400">All live calls use this base.</p>
+                </div>
+                <span class="text-[11px] text-slate-400">Current: <span id="settings-current-env" class="text-white font-semibold">PROD</span></span>
+              </div>
+              <form id="settings-host-form" class="space-y-3">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <label class="text-xs font-semibold uppercase tracking-wide text-slate-400 col-span-1 sm:col-span-1 flex flex-col gap-1">
+                    Environment
+                    <select id="settings-env" class="w-full bg-background-dark border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:ring-primary focus:border-primary">
+                      <option value="prod">Prod (Caddy)</option>
+                      <option value="local">Local</option>
+                      <option value="custom">Custom</option>
+                    </select>
+                  </label>
+                  <label class="text-xs font-semibold uppercase tracking-wide text-slate-400 col-span-1 sm:col-span-2 flex flex-col gap-1">
+                    Host URL
+                    <input id="settings-host" class="w-full bg-background-dark border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:ring-primary focus:border-primary" placeholder="https://base.thefledge.com" />
+                  </label>
+                </div>
+                <div class="flex flex-wrap gap-3">
+                  <button type="submit" class="px-4 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors">Save Host</button>
+                  <button id="settings-reset-host" class="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white hover:bg-white/10 transition-colors" type="button">Reset to Prod</button>
+                  <span class="text-xs text-slate-500 flex items-center gap-1">Active host: <span id="settings-current-host" class="text-white font-semibold">-</span></span>
+                </div>
+              </form>
+            </div>
+
+            <div class="rounded-xl bg-card-dark border border-white/5 p-6 space-y-3">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="font-bold text-white">Sessionless Identity</h3>
+                  <p class="text-xs text-slate-400">Manage the live admin keys.</p>
+                </div>
+                <span class="text-[11px] text-slate-400">UUID: <span id="settings-uuid" class="text-white font-semibold">-</span></span>
+              </div>
+              <p class="text-xs text-slate-400 break-all">PubKey: <span id="settings-pubkey" class="text-white font-semibold">-</span></p>
+              <div class="flex flex-wrap gap-3">
+                <button id="settings-export" class="px-4 py-2 rounded-lg bg-white text-black text-sm font-bold hover:bg-slate-200 transition-colors flex items-center gap-2" type="button">
+                  <span class="material-symbols-outlined text-[18px]">download</span> Download Identity
+                </button>
+                <label class="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white hover:bg-white/10 transition-colors cursor-pointer flex items-center gap-2" for="settings-upload">
+                  <span class="material-symbols-outlined text-[18px]">upload</span> Upload Identity
+                </label>
+                <input id="settings-upload" type="file" accept="application/json" class="hidden" />
+                <button id="settings-clear" class="px-4 py-2 rounded-lg bg-red-500/10 border border-red-500/30 text-sm text-red-200 hover:bg-red-500/20 transition-colors flex items-center gap-2" type="button">
+                  <span class="material-symbols-outlined text-[18px]">restart_alt</span> Clear Local Identity
+                </button>
+              </div>
+              <p class="text-[11px] text-slate-500">Actions are live — no mock data.</p>
+            </div>
+          </div>
+
+          <div class="rounded-xl bg-card-dark border border-white/5 p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h3 class="font-bold text-white">Live Service Health</h3>
+                <p class="text-xs text-slate-400">Sanora / Covenant / Dolores</p>
+              </div>
+              <button id="settings-refresh-health" class="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-white hover:bg-white/10 transition-colors flex items-center gap-2">
+                <span class="material-symbols-outlined text-[16px]">refresh</span>
+                Refresh
+              </button>
+            </div>
+            <div id="service-health" class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div class="text-slate-400 text-sm">Checking services...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+<script type="module" src="admin-analytics.js"></script><script src="nav.js"></script></body>
+</html>
