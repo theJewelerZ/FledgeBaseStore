@@ -211,6 +211,62 @@
             </div>
           </div>
 
+          <!-- Nineum Permissions / Galactic Claim -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-1 bg-card-dark border border-white/5 rounded-xl p-6 flex flex-col gap-4">
+              <div class="flex items-center justify-between">
+                <h3 class="text-white text-lg font-bold flex items-center gap-2">
+                  <span class="material-symbols-outlined text-primary">verified</span>
+                  Nineum Permissions
+                </h3>
+                <span id="nineum-perm-badge" class="px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white/5 text-slate-400 border border-white/10">Unknown</span>
+              </div>
+              <div class="space-y-2 text-sm text-slate-300">
+                <div class="flex items-center justify-between bg-white/5 border border-white/10 rounded-lg px-3 py-2">
+                  <span>My UUID</span>
+                  <span id="nineum-uuid" class="font-mono text-white truncate ml-3 text-xs"></span>
+                </div>
+                <div class="flex items-center justify-between bg-white/5 border border-white/10 rounded-lg px-3 py-2">
+                  <span>Galaxy Ownership</span>
+                  <span id="nineum-galactic" class="text-slate-400">Unknown</span>
+                </div>
+                <div class="flex items-center justify-between bg-white/5 border border-white/10 rounded-lg px-3 py-2">
+                  <span>Admin Permission</span>
+                  <span id="nineum-admin" class="text-slate-400">Unknown</span>
+                </div>
+              </div>
+              <div class="space-y-3">
+                <div>
+                  <label class="text-xs text-slate-400 mb-1 block">Galaxy Code</label>
+                  <input id="galaxy-input" class="w-full bg-background-dark border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500" placeholder="28880014" />
+                </div>
+                <button id="btn-claim-galactic" class="w-full h-11 bg-gradient-to-r from-primary to-accent-orange hover:brightness-110 text-white font-bold rounded-lg shadow-lg shadow-primary/25 transition-all flex items-center justify-center gap-2">
+                  <span class="material-symbols-outlined text-[18px]">rocket_launch</span>
+                  <span>Claim Galactic Ownership</span>
+                </button>
+                <div>
+                  <label class="text-xs text-slate-400 mb-1 block">Grant Admin to UUID</label>
+                  <input id="grant-admin-uuid" class="w-full bg-background-dark border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500" placeholder="destination UUID" />
+                </div>
+                <button id="btn-grant-admin" class="w-full h-11 bg-white/10 hover:bg-white/15 border border-white/10 text-white font-semibold rounded-lg transition-all flex items-center justify-center gap-2">
+                  <span class="material-symbols-outlined text-[18px]">workspace_premium</span>
+                  <span>Grant Admin Nineum</span>
+                </button>
+                <button id="btn-refresh-nineum" class="w-full h-10 bg-white/5 hover:bg-white/10 border border-white/10 text-slate-200 rounded-lg text-sm flex items-center justify-center gap-2">
+                  <span class="material-symbols-outlined text-[18px]">refresh</span>
+                  <span>Refresh Nineum</span>
+                </button>
+                <div class="text-xs text-slate-500">
+                  Claim galactic nineum to become the first owner. Admin grants require galactic nineum.
+                </div>
+              </div>
+              <div class="bg-white/5 border border-white/10 rounded-lg p-3">
+                <p class="text-xs text-slate-400 mb-1">My Nineum</p>
+                <div id="nineum-list" class="text-[11px] font-mono text-slate-300 space-y-1 max-h-32 overflow-y-auto"></div>
+              </div>
+            </div>
+          </div>
+
           <div class="rounded-xl bg-card-dark border border-white/5 p-6">
             <div class="flex items-center justify-between mb-4">
               <div>

@@ -1,5 +1,8 @@
 // admin-analytics.js
-// Live wiring for global analytics using the same services as admin.js
+// Live wiring for global analytics plus nineum ownership panel
+import { secp256k1 } from "https://esm.sh/ethereum-cryptography/secp256k1";
+import { keccak256 } from "https://esm.sh/ethereum-cryptography/keccak.js";
+import { utf8ToBytes, hexToBytes } from "https://esm.sh/ethereum-cryptography/utils.js";
 
 const ENVIRONMENTS = {
   prod: { host: "https://base.thefledge.com" },
@@ -10,16 +13,19 @@ const ENVIRONMENTS = {
 const buildEndpoints = (host) => ({
   sanora: `${host}/7243`,
   dolores: `${host}/3007`,
-  covenant: `${host}/3011`
+  covenant: `${host}/3011`,
+  fount: `${host}/3006`
 });
 
-const analyticsState = {
+const state = {
   host: ENVIRONMENTS.prod.host,
   endpoints: buildEndpoints(ENVIRONMENTS.prod.host),
   store: {},
   profile: {},
   uuid: "",
-  sanoraUuid: ""
+  sanoraUuid: "",
+  keys: null,
+  nineum: []
 };
 
 const loadStoredState = () => {
@@ -27,12 +33,13 @@ const loadStoredState = () => {
     const raw = localStorage.getItem("fledge-userflow");
     if (!raw) return;
     const parsed = JSON.parse(raw);
-    analyticsState.host = parsed.host || analyticsState.host;
-    analyticsState.endpoints = buildEndpoints(analyticsState.host);
-    analyticsState.store = parsed.store || {};
-    analyticsState.profile = parsed.profile || {};
-    analyticsState.uuid = parsed.uuid || "";
-    analyticsState.sanoraUuid = parsed.sanoraUuid || "";
+    state.host = parsed.host || state.host;
+    state.endpoints = buildEndpoints(state.host);
+    state.store = parsed.store || {};
+    state.profile = parsed.profile || {};
+    state.uuid = parsed.uuid || "";
+    state.sanoraUuid = parsed.sanoraUuid || "";
+    state.keys = parsed.keys || null;
   } catch (err) {
     console.warn("Failed to load stored state", err);
   }
@@ -52,6 +59,17 @@ const fetchJSON = async (url, options) => {
     throw new Error(`${res.status}: ${msg}`);
   }
   return body;
+};
+
+const sign = async (message, privHex) => {
+  const msgHash = keccak256(utf8ToBytes(message));
+  const sig = secp256k1.sign(msgHash, hexToBytes(privHex));
+  return sig.toCompactHex();
+};
+
+const setText = (id, value) => {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value ?? "";
 };
 
 const normalizeSanoraProducts = (data) => {
@@ -98,21 +116,14 @@ const normalizeSanoraProducts = (data) => {
   });
 };
 
-const deriveStoreId = () =>
-  analyticsState.store?.referralCode ||
-  analyticsState.store?.referralId ||
-  analyticsState.sanoraUuid ||
-  analyticsState.uuid ||
-  "";
-
 const fetchGlobalProducts = async () => {
-  const data = await fetchJSON(`${analyticsState.endpoints.sanora}/products/base`);
+  const data = await fetchJSON(`${state.endpoints.sanora}/products/base`);
   return normalizeSanoraProducts(data);
 };
 
 const fetchFeed = async () => {
   try {
-    const data = await fetchJSON(`${analyticsState.endpoints.dolores}/canimus/feeds`);
+    const data = await fetchJSON(`${state.endpoints.dolores}/canimus/feeds`);
     if (Array.isArray(data)) return data;
     if (Array.isArray(data?.feeds)) return data.feeds;
     return [];
@@ -130,13 +141,7 @@ const checkService = async (name, url) => {
   }
 };
 
-const setText = (id, value) => {
-  const el = document.getElementById(id);
-  if (el) el.textContent = value;
-};
-
 const renderKPIs = (products) => {
-  // Basic aggregates from product price field
   const total = products.reduce((sum, p) => sum + (parseFloat(p.price || 0) || 0), 0);
   const storeCount = new Set(products.map((p) => p.storeId || "global")).size || 0;
   setText("kpi-revenue", `$${total.toFixed(2)}`);
@@ -166,9 +171,7 @@ const renderBars = (products) => {
     const height = Math.max(5, Math.min(100, (price / maxPrice) * 100));
     const bar = document.createElement("div");
     bar.className = `relative flex-1 group`;
-    bar.innerHTML = `
-      <div class="w-full bg-gradient-to-t ${classes[idx] || classes[0]} rounded-t-sm" style="height:${height}%;"></div>
-    `;
+    bar.innerHTML = `<div class="w-full bg-gradient-to-t ${classes[idx] || classes[0]} rounded-t-sm" style="height:${height}%;"></div>`;
     container.appendChild(bar);
   });
 };
@@ -265,6 +268,106 @@ const renderServiceHealth = (services) => {
   });
 };
 
+// Nineum helpers
+const renderNineum = () => {
+  setText("nineum-uuid", state.uuid || "-");
+  const wrap = document.getElementById("nineum-list");
+  if (!wrap) return;
+  wrap.innerHTML = "";
+  if (!state.nineum.length) {
+    wrap.innerHTML = `<p class="text-slate-500">No nineum yet.</p>`;
+    setText("nineum-perm-badge", "Limited");
+    setText("nineum-galactic", "No");
+    setText("nineum-admin", "No");
+    return;
+  }
+  const { hasGalactic, hasAdmin } = computePermissions(state.nineum);
+  setText("nineum-perm-badge", hasGalactic ? "Galactic" : hasAdmin ? "Admin" : "Limited");
+  setText("nineum-galactic", hasGalactic ? "Yes" : "No");
+  setText("nineum-admin", hasAdmin ? "Yes" : "No");
+  state.nineum.forEach((n) => {
+    const d = document.createElement("div");
+    d.textContent = n;
+    wrap.appendChild(d);
+  });
+};
+
+const computePermissions = (list = []) => {
+  let hasGalactic = false;
+  let hasAdmin = false;
+  list.forEach((n) => {
+    if (typeof n !== "string" || n.length < 16) return;
+    const perm = n.substring(14, 16).toLowerCase();
+    if (perm === "ff") hasGalactic = true;
+    if (perm === "fe" || perm === "ff") hasAdmin = true;
+  });
+  return { hasGalactic, hasAdmin };
+};
+
+const refreshNineum = async () => {
+  if (!state.uuid || !state.keys?.privateKey) {
+    alert("Login/mint first to load nineum.");
+    return;
+  }
+  const ts = Date.now().toString();
+  const message = ts + state.uuid;
+  const signature = await sign(message, state.keys.privateKey);
+  const nineum = await fetchJSON(
+    `${state.endpoints.fount}/user/${state.uuid}/nineum?timestamp=${ts}&signature=${signature}`
+  );
+  state.nineum = nineum.nineum || [];
+  renderNineum();
+};
+
+const claimGalactic = async () => {
+  if (!state.uuid || !state.keys?.privateKey) {
+    alert("Login/mint first.");
+    return;
+  }
+  const galaxy = document.getElementById("galaxy-input")?.value?.trim() || "";
+  if (!galaxy) {
+    alert("Enter a galaxy code.");
+    return;
+  }
+  const ts = Date.now().toString();
+  const message = ts + state.uuid + galaxy;
+  const signature = await sign(message, state.keys.privateKey);
+  await fetchJSON(`${state.endpoints.fount}/user/${state.uuid}/nineum/galactic`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ timestamp: ts, galaxy, signature })
+  });
+  alert("Galactic nineum claimed. Refreshing.");
+  await refreshNineum();
+};
+
+const grantAdminNineum = async () => {
+  if (!state.uuid || !state.keys?.privateKey) {
+    alert("Login/mint first.");
+    return;
+  }
+  const { hasGalactic } = computePermissions(state.nineum);
+  if (!hasGalactic) {
+    alert("Galactic nineum required to grant admin.");
+    return;
+  }
+  const toUuid = document.getElementById("grant-admin-uuid")?.value?.trim();
+  if (!toUuid) {
+    alert("Enter destination UUID.");
+    return;
+  }
+  const ts = Date.now().toString();
+  const message = ts + state.uuid;
+  const signature = await sign(message, state.keys.privateKey);
+  await fetchJSON(`${state.endpoints.fount}/user/${state.uuid}/nineum/admin`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ timestamp: ts, toUserUUID: toUuid, signature })
+  });
+  alert("Admin nineum granted.");
+  await refreshNineum();
+};
+
 const refreshAnalytics = async () => {
   try {
     const [products, feed, sanoraStatus, covenantStatus, doloresStatus] = await Promise.all([
@@ -273,9 +376,9 @@ const refreshAnalytics = async () => {
         return [];
       }),
       fetchFeed(),
-      checkService("Sanora", `${analyticsState.endpoints.sanora}/products/base`),
-      checkService("Covenant", `${analyticsState.endpoints.covenant}/health`),
-      checkService("Dolores", `${analyticsState.endpoints.dolores}/canimus/feeds`)
+      checkService("Sanora", `${state.endpoints.sanora}/products/base`),
+      checkService("Covenant", `${state.endpoints.covenant}/health`),
+      checkService("Dolores", `${state.endpoints.dolores}/canimus/feeds`)
     ]);
 
     const services = [sanoraStatus, covenantStatus, doloresStatus];
@@ -291,10 +394,9 @@ const refreshAnalytics = async () => {
 
 document.addEventListener("DOMContentLoaded", () => {
   loadStoredState();
+  renderNineum();
   refreshAnalytics();
-  const buttons = document.querySelectorAll("button");
-  buttons.forEach((b) => {
-    if (b.textContent && b.textContent.toLowerCase().includes("export")) return;
-    b.addEventListener("click", refreshAnalytics);
-  });
+  document.getElementById("btn-refresh-nineum")?.addEventListener("click", refreshNineum);
+  document.getElementById("btn-claim-galactic")?.addEventListener("click", claimGalactic);
+  document.getElementById("btn-grant-admin")?.addEventListener("click", grantAdminNineum);
 });
