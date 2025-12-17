@@ -249,24 +249,30 @@ const renderFeed = (feed) => {
 };
 
 const renderServiceHealth = (services) => {
-  const wrap = document.getElementById("service-health");
-  if (!wrap) return;
-  wrap.innerHTML = "";
-  services.forEach((s) => {
-    const row = document.createElement("div");
-    row.className =
-      "flex items-center justify-between p-3 rounded-lg border " +
-      (s.status === "up" ? "border-green-500/20 bg-green-500/5" : "border-red-500/20 bg-red-500/5");
-    row.innerHTML = `
-      <div class="flex items-center gap-2">
-        <span class="material-symbols-outlined text-sm ${s.status === "up" ? "text-green-300" : "text-red-300"}">${
-      s.status === "up" ? "check_circle" : "error"
-    }</span>
-        <span class="text-white text-sm font-semibold">${s.name}</span>
-      </div>
-      <span class="text-xs text-slate-300">${s.detail}</span>
-    `;
-    wrap.appendChild(row);
+  ["service-health", "service-health-footer"].forEach((id) => {
+    const wrap = document.getElementById(id);
+    if (!wrap) return;
+    wrap.innerHTML = "";
+    services.forEach((s) => {
+      const row = document.createElement("div");
+      row.className =
+        "flex items-center justify-between p-3 rounded-lg border " +
+        (s.status === "up"
+          ? "border-green-500/20 bg-green-500/5"
+          : s.status === "unknown"
+          ? "border-slate-500/20 bg-slate-800/40"
+          : "border-red-500/20 bg-red-500/5");
+      row.innerHTML = `
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-sm ${s.status === "up" ? "text-green-300" : s.status === "unknown" ? "text-slate-300" : "text-red-300"}">${
+        s.status === "up" ? "check_circle" : s.status === "unknown" ? "help" : "error"
+      }</span>
+          <span class="text-white text-sm font-semibold">${s.name}</span>
+        </div>
+        <span class="text-xs text-slate-300">${s.detail}</span>
+      `;
+      wrap.appendChild(row);
+    });
   });
 };
 
