@@ -25,6 +25,7 @@ const state = {
   uuid: "",
   sanoraUuid: "",
   keys: null,
+  fountUuid: "",
   nineum: []
 };
 
@@ -40,6 +41,7 @@ const loadStoredState = () => {
     state.uuid = parsed.uuid || "";
     state.sanoraUuid = parsed.sanoraUuid || "";
     state.keys = parsed.keys || null;
+    state.fountUuid = parsed.fountUuid || "";
   } catch (err) {
     console.warn("Failed to load stored state", err);
   }
@@ -309,11 +311,13 @@ const refreshNineum = async () => {
     alert("Login/mint first to load nineum.");
     return;
   }
+  await ensureFountUser();
+  const targetUuid = state.fountUuid || state.uuid;
   const ts = Date.now().toString();
-  const message = ts + state.uuid;
+  const message = ts + targetUuid;
   const signature = await sign(message, state.keys.privateKey);
   const nineum = await fetchJSON(
-    `${state.endpoints.fount}/user/${state.uuid}/nineum?timestamp=${ts}&signature=${signature}`
+    `${state.endpoints.fount}/user/${targetUuid}/nineum?timestamp=${ts}&signature=${signature}`
   );
   state.nineum = nineum.nineum || [];
   renderNineum();
@@ -324,15 +328,17 @@ const claimGalactic = async () => {
     alert("Login/mint first.");
     return;
   }
+  await ensureFountUser();
+  const targetUuid = state.fountUuid || state.uuid;
   const galaxy = document.getElementById("galaxy-input")?.value?.trim() || "";
   if (!galaxy) {
     alert("Enter a galaxy code.");
     return;
   }
   const ts = Date.now().toString();
-  const message = ts + state.uuid + galaxy;
+  const message = ts + targetUuid + galaxy;
   const signature = await sign(message, state.keys.privateKey);
-  await fetchJSON(`${state.endpoints.fount}/user/${state.uuid}/nineum/galactic`, {
+  await fetchJSON(`${state.endpoints.fount}/user/${targetUuid}/nineum/galactic`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ timestamp: ts, galaxy, signature })
@@ -346,6 +352,8 @@ const grantAdminNineum = async () => {
     alert("Login/mint first.");
     return;
   }
+  await ensureFountUser();
+  const targetUuid = state.fountUuid || state.uuid;
   const { hasGalactic } = computePermissions(state.nineum);
   if (!hasGalactic) {
     alert("Galactic nineum required to grant admin.");
@@ -357,15 +365,30 @@ const grantAdminNineum = async () => {
     return;
   }
   const ts = Date.now().toString();
-  const message = ts + state.uuid;
+  const message = ts + targetUuid;
   const signature = await sign(message, state.keys.privateKey);
-  await fetchJSON(`${state.endpoints.fount}/user/${state.uuid}/nineum/admin`, {
+  await fetchJSON(`${state.endpoints.fount}/user/${targetUuid}/nineum/admin`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ timestamp: ts, toUserUUID: toUuid, signature })
   });
   alert("Admin nineum granted.");
   await refreshNineum();
+};
+
+const ensureFountUser = async () => {
+  if (state.fountUuid) return state.fountUuid;
+  if (!state.keys?.pubKey || !state.keys?.privateKey) throw new Error("Keys required to create Fount user.");
+  const ts = Date.now().toString();
+  const message = ts + state.keys.pubKey;
+  const signature = await sign(message, state.keys.privateKey);
+  const user = await fetchJSON(`${state.endpoints.fount}/user/create`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ timestamp: ts, pubKey: state.keys.pubKey, signature })
+  });
+  state.fountUuid = user.uuid || user.userUUID || state.fountUuid;
+  return state.fountUuid;
 };
 
 const refreshAnalytics = async () => {
