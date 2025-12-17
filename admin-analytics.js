@@ -186,14 +186,8 @@ const renderTopStores = (products) => {
     body.innerHTML = `<tr><td class="p-4 text-slate-500" colspan="4">No stores yet.</td></tr>`;
     return;
   }
-  const grouped = products.reduce((acc, p) => {
-    const id = p.storeId || "global";
-    acc[id] = acc[id] || { id, products: 0, volume: 0 };
-    acc[id].products += 1;
-    acc[id].volume += parseFloat(p.price || 0) || 0;
-    return acc;
-  }, {});
-  const rows = Object.values(grouped)
+  const grouped = aggregateStores(products);
+  const rows = grouped
     .sort((a, b) => b.volume - a.volume)
     .slice(0, 10);
   rows.forEach((row) => {
@@ -212,6 +206,49 @@ const renderTopStores = (products) => {
     `;
     body.appendChild(tr);
   });
+};
+
+const renderMiniStores = (products) => {
+  const wrap = document.getElementById("mini-store-list");
+  if (!wrap) return;
+  wrap.innerHTML = "";
+  if (!products.length) {
+    wrap.innerHTML = `<div class="text-slate-400 text-sm">No mini-stores yet.</div>`;
+    return;
+  }
+  const stores = aggregateStores(products).slice(0, 9);
+  stores.forEach((s) => {
+    const card = document.createElement("div");
+    card.className = "p-4 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 transition-colors";
+    card.innerHTML = `
+      <div class="flex items-center justify-between mb-2">
+        <div class="flex items-center gap-2">
+          <div class="size-8 rounded bg-gradient-to-br from-primary to-accent-orange flex items-center justify-center text-white font-bold text-xs">${s.id
+            .slice(0, 2)
+            .toUpperCase()}</div>
+          <div class="flex flex-col">
+            <span class="text-white text-sm font-semibold">${s.id}</span>
+            <span class="text-xs text-slate-400">${s.products} products</span>
+          </div>
+        </div>
+        <span class="text-xs font-mono text-slate-400">$${s.volume.toFixed(2)}</span>
+      </div>
+      <div class="text-xs text-slate-400 truncate">Top item: ${s.sampleTitle}</div>
+    `;
+    wrap.appendChild(card);
+  });
+};
+
+const aggregateStores = (products) => {
+  const grouped = products.reduce((acc, p) => {
+    const id = p.storeId || "global";
+    if (!acc[id]) acc[id] = { id, products: 0, volume: 0, sampleTitle: p.title || "-" };
+    acc[id].products += 1;
+    acc[id].volume += parseFloat(p.price || 0) || 0;
+    if (p.title) acc[id].sampleTitle = p.title;
+    return acc;
+  }, {});
+  return Object.values(grouped);
 };
 
 const renderFeed = (feed) => {
@@ -415,6 +452,7 @@ const refreshAnalytics = async () => {
     renderKPIs(products);
     renderBars(products);
     renderTopStores(products);
+    renderMiniStores(products);
     renderFeed(feed);
     renderServiceHealth(services);
   } catch (err) {
