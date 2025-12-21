@@ -161,9 +161,11 @@
             <h2 class="text-lg font-bold text-[#111318] dark:text-white">Payment Method</h2>
             <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Encrypted and secure.</p>
           </div>
-          <div class="p-6">
-            <div id="card-element" class="bg-[#f5f7fb] dark:bg-[#101622] border border-gray-200 dark:border-gray-700 rounded-lg p-4"></div>
-            <p id="card-errors" class="text-sm text-red-500 mt-2"></p>
+          <div class="p-6 space-y-3">
+            <div id="payment-element" class="bg-[#f5f7fb] dark:bg-[#101622] border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+              <p class="text-sm text-gray-500 dark:text-gray-400">Payment element loads after totals are ready.</p>
+            </div>
+            <p id="payment-errors" class="text-sm text-red-500"></p>
           </div>
         </div>
 
@@ -427,20 +429,24 @@
     };
 
     let stripeInstance = null;
-    let cardElement = null;
-    let cardMounted = false;
+    let stripeElements = null;
+    let paymentElement = null;
+    let paymentMounted = false;
 
-    const mountCard = (stripe) => {
-      if (cardMounted) return;
-      const elements = stripe.elements();
-      cardElement = elements.create("card");
-      cardElement.mount("#card-element");
-      cardElement.on("change", (event) => {
-        const errEl = document.getElementById("card-errors");
+    const mountPaymentElement = (stripe, clientSecret) => {
+      if (paymentMounted && paymentElement) return;
+      stripeElements = stripe.elements({ clientSecret });
+      paymentElement = stripeElements.create("payment");
+      paymentElement.mount("#payment-element");
+      paymentMounted = true;
+      paymentElement.on("ready", () => {
+        toast("Payment element ready", "info");
+      });
+      paymentElement.on("change", (event) => {
+        const errEl = document.getElementById("payment-errors");
         if (!errEl) return;
         errEl.textContent = event.error ? event.error.message : "";
       });
-      cardMounted = true;
     };
 
     document.getElementById("btn-checkout-pay")?.addEventListener("click", async () => {
@@ -467,28 +473,35 @@
         // PaymentIntent path (backend supports PI endpoint)
         const res = await addieIntent(state, payload);
         const publishableKey = res.publishableKey || res.pk || res.publicKey;
-        if (res.paymentIntent && publishableKey) {
+        const clientSecret = res.paymentIntent?.clientSecret || res.clientSecret || res.paymentIntent;
+        if (publishableKey && clientSecret) {
           stripeInstance = stripeInstance || Stripe(publishableKey);
-          mountCard(stripeInstance);
-          const clientSecret = res.paymentIntent.includes("_secret") ? res.paymentIntent : res.paymentIntent.clientSecret || res.clientSecret || res.paymentIntent;
+          mountPaymentElement(stripeInstance, clientSecret);
+
           const billingName = `${document.getElementById("firstName")?.value || ""} ${document.getElementById("lastName")?.value || ""}`.trim();
-          const { error, paymentIntent } = await stripeInstance.confirmCardPayment(clientSecret, {
-            payment_method: {
-              card: cardElement,
-              billing_details: { name: billingName || undefined }
+          const billingEmail = document.getElementById("email")?.value || undefined;
+          const successUrl = `${window.location.origin}/checkout.html?success=1`;
+
+          const { error } = await stripeInstance.confirmPayment({
+            elements: stripeElements,
+            confirmParams: {
+              return_url: successUrl,
+              payment_method_data: {
+                billing_details: {
+                  name: billingName || undefined,
+                  email: billingEmail || undefined
+                }
+              }
             }
           });
+
           if (error) {
-            const errEl = document.getElementById("card-errors");
-            if (errEl) errEl.textContent = error.message || "Card error";
+            const errEl = document.getElementById("payment-errors");
+            if (errEl) errEl.textContent = error.message || "Payment error";
             throw error;
           }
-          if (paymentIntent?.status === "succeeded") {
-            toast("Payment succeeded!", "success");
-            window.location.href = `${window.location.origin}/checkout.html?success=1`;
-          } else {
-            toast(`Payment state: ${paymentIntent?.status || "unknown"}`, "info");
-          }
+          // If no error, Stripe will redirect or resolve; show a toast while awaiting redirect.
+          toast("Redirecting to complete payment...", "info");
           return;
         }
 
