@@ -27,3 +27,8 @@
 - Added Stripe PaymentIntent fallback to `checkout.html` using Stripe.js card element: mounts card, confirms `payment_intent` when Checkout session endpoint is absent, and shows inline card errors.
 - Added identity upload/reset controls and a display name/email capture on `login.html` so minting no longer fails due to missing profile name.
 - Mint/login now also creates Covenant and Aretha users alongside Continuebee/BDO/Sanora/Addie/Fount to keep all service UUIDs provisioned together.
+
+## 2025-12-17
+- Split admin analytics into dedicated pages (`admin-mini-store.html`, `admin-inventory.html`, `admin-users.html`, `admin-security.html`) and added a live `admin-settings.html` with host/env selector, identity export/import/clear, and service health refresh; updated nav highlights.
+- Trimmed `admin-analytics.html` to analytics-only content (KPIs, bars, feed, service health).
+- Updated checkout to use Stripe Payment Element with Addie PaymentIntent response (publishable key + client secret), confirming payments via `stripe.confirmPayment` and billing details/return URL; removed legacy card element flow.
